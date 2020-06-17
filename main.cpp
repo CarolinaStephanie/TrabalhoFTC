@@ -1,18 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define MAXCHAR 500
+
+int init[20], fin[20], a = 0, b = 0;
+
 /***/
 typedef struct Alphab
 {
-    char simbolo[100];          ///Simbolo do alfabeto
+    char simbolo[100]; ///Simbolo do alfabeto
     struct Alphab *next;
 
-    void print(){
+    void print()
+    {
         printf("\n Alphab: ");
         struct Alphab *t = this;
-        while(t != NULL)
-        {   printf("%s", t->simbolo);
-            if(t->next != NULL)
+        while (t != NULL)
+        {
+            printf("%s", t->simbolo);
+            if (t->next != NULL)
                 printf(", ");
             t = t->next;
         }
@@ -24,12 +31,14 @@ typedef struct nameList
     char name[100];
     struct nameList *next;
 
-    void print(){
+    void print()
+    {
         printf("\n nameList: ");
         struct nameList *t = this;
-        while(t != NULL)
-        {   printf("%s", t->name);
-            if(t->next !=NULL)
+        while (t != NULL)
+        {
+            printf("%s", t->name);
+            if (t->next != NULL)
                 printf(", ");
             t = t->next;
         }
@@ -38,18 +47,20 @@ typedef struct nameList
 /***/
 typedef struct States
 {
-    char name[100];            /// Nome do estado
-    int eState;                /// Indicador de estado final se igual a 1;
-    int id;                    ///ID;
+    char name[100]; /// Nome do estado
+    int eState;     /// Indicador de estado final se igual a 1;
+    int id;         ///ID;
     struct States *next;
 
     lName *listname;
 
-    void print(){
+    void print()
+    {
         printf("\n States: ");
         struct States *t = this;
-        while(t != NULL)
-        {   printf("\n name: %s | Final? %d | ID: %d | ", t->name, t->eState, t->id);
+        while (t != NULL)
+        {
+            printf("\n name: %s | Final? %d | ID: %d | ", t->name, t->eState, t->id);
             t->listname->print();
             t = t->next;
         }
@@ -58,17 +69,18 @@ typedef struct States
 /***/
 typedef struct Edge
 {
-    char from[100];            /// Origem
-    char to[100];              /// Destino
-    char input[100];           /// Simbolo nescessario
+    char from[100];  /// Origem
+    char to[100];    /// Destino
+    char input[100]; /// Simbolo nescessario
     struct Edge *next;
 
-
-    void print(){
+    void print()
+    {
         printf("\n Transicoes: \n");
         struct Edge *t = this;
-        while(t != NULL)
-        {   printf("( %s, %s )->%s\n", t->from, t->input, t->to);
+        while (t != NULL)
+        {
+            printf("( %s, %s )->%s\n", t->from, t->input, t->to);
             t = t->next;
         }
     }
@@ -76,13 +88,13 @@ typedef struct Edge
 /***/
 typedef struct AFi
 {
-    lStates *States;         /// Conjuto de Estados
-    lAlphab *Alpha;          /// Alfabeto
-    lEdge *Transations;      /// Lista de edges
-    lStates *Start;          /// Estado Inicial
+    lStates *States;    /// Conjuto de Estados
+    lAlphab *Alpha;     /// Alfabeto
+    lEdge *Transations; /// Lista de edges
+    lStates *Start;     /// Estado Inicial
 
-
-    void print(){
+    void print()
+    {
         printf("\n AF: \n");
         printf(" Inicial: %s\n ", Start->name);
         printf(" Estados: ");
@@ -92,325 +104,309 @@ typedef struct AFi
     }
 } AF;
 /***/
-lName* newLName ()
+lName *newLName()
 {
 
-    lName *new1 = (lName*) calloc ( sizeof (lName), 1 );
+    lName *new1 = (lName *)calloc(sizeof(lName), 1);
 
-
-    if ( new1 == NULL )
+    if (new1 == NULL)
     {
-        printf ( " ERRO (lName): Impossivel montar." );
+        printf(" ERRO (lName): Impossivel montar.");
     }
     else
     {
-        strcpy(new1->name,"nothing");
-        new1->next=NULL;
+        strcpy(new1->name, "nothing");
+        new1->next = NULL;
         return new1;
     }
 }
 /***/
-void putName (lName **Lista,lName *new1)
+void putName(lName **Lista, lName *new1)
 {
-    if(*Lista==NULL)
+    if (*Lista == NULL)
     {
-        new1->next=NULL;
-        *Lista=new1;
+        new1->next = NULL;
+        *Lista = new1;
     }
     else
     {
         lName *temp;
-        temp=*Lista;
+        temp = *Lista;
 
-        while(temp!=NULL)
+        while (temp != NULL)
         {
-            if(temp->next==NULL)
+            if (temp->next == NULL)
             {
-                new1->next=NULL;
-                temp->next=new1;
+                new1->next = NULL;
+                temp->next = new1;
                 return;
             }
-            temp=temp->next;
+            temp = temp->next;
         }
     }
 }
 /***/
-lAlphab* newAlphab ()
+lAlphab *newAlphab()
 {
 
-    lAlphab *new1 = (lAlphab*) calloc ( sizeof (lAlphab), 1 );
+    lAlphab *new1 = (lAlphab *)calloc(sizeof(lAlphab), 1);
 
-
-    if ( new1 == NULL )
+    if (new1 == NULL)
     {
-        printf ( " ERRO (lAlphab): Impossivel montar." );
+        printf(" ERRO (lAlphab): Impossivel montar.");
     }
     else
     {
-        strcpy(new1->simbolo," ");
-        new1->next=NULL;
+        strcpy(new1->simbolo, " ");
+        new1->next = NULL;
         return new1;
     }
 }
 /***/
-void putAlphab (lAlphab **Lista,lAlphab *new1)
+void putAlphab(lAlphab **Lista, lAlphab *new1)
 {
-    if(*Lista==NULL)
+    if (*Lista == NULL)
     {
-        new1->next=NULL;
-        *Lista=new1;
+        new1->next = NULL;
+        *Lista = new1;
     }
 
     else
     {
         lAlphab *temp;
-        temp=*Lista;
+        temp = *Lista;
 
-        while(temp!=NULL)
+        while (temp != NULL)
         {
-            if(temp->next==NULL)
+            if (temp->next == NULL)
             {
-                new1->next=NULL;
-                temp->next=new1;
+                new1->next = NULL;
+                temp->next = new1;
                 return;
             }
-            temp=temp->next;
+            temp = temp->next;
         }
-
     }
-
-
 }
 /***/
-lEdge* newEdge ()
+lEdge *newEdge()
 {
-    lEdge *new1 = (lEdge*) calloc ( sizeof (lEdge), 1 );
+    lEdge *new1 = (lEdge *)calloc(sizeof(lEdge), 1);
 
-
-    if ( new1 == NULL )
+    if (new1 == NULL)
     {
-        printf ( " ERRO (lEdge): Impossivel montar." );
+        printf(" ERRO (lEdge): Impossivel montar.");
     }
     else
     {
-        strcpy(new1->from," ");
-        strcpy(new1->to," ");
-        strcpy(new1->to," ");
-        new1->next=NULL;
+        strcpy(new1->from, " ");
+        strcpy(new1->to, " ");
+        strcpy(new1->to, " ");
+        new1->next = NULL;
         return new1;
     }
 }
 /***/
-void putEdge (lEdge **Lista,lEdge *new2)
+void putEdge(lEdge **Lista, lEdge *new2)
 {
-    if(*Lista==NULL)
+    if (*Lista == NULL)
     {
-        new2->next=NULL;
-        *Lista=new2;
+        new2->next = NULL;
+        *Lista = new2;
         return;
     }
 
     else
     {
         lEdge *temp;
-        temp=*Lista;
+        temp = *Lista;
 
-        while(temp!=NULL)
+        while (temp != NULL)
         {
-            if(temp->next==NULL)
+            if (temp->next == NULL)
             {
 
-                temp->next=new2;
-                temp->next->next=NULL;
+                temp->next = new2;
+                temp->next->next = NULL;
                 return;
             }
-            temp=temp->next;
+            temp = temp->next;
         }
-
     }
 }
 /***/
-char* findEdge (lEdge *Lista, char *state,char *input,int op)
+char *findEdge(lEdge *Lista, char *state, char *input, int op)
 {
     lEdge *temp;
     char statetemp[100];
 
-    temp=Lista;
-    if (op==0)//Para AFN
+    temp = Lista;
+    if (op == 0) //Para AFN
     {
-        strcpy(statetemp,"");
-        while(temp!=NULL)
+        strcpy(statetemp, "");
+        while (temp != NULL)
         {
-            if(strcmp(temp->from,state)==0 && strcmp(temp->input,input)==0)
+            if (strcmp(temp->from, state) == 0 && strcmp(temp->input, input) == 0)
             {
-                if(strcmp(statetemp,"")!=0) ///Se caso for mais de um estado
+                if (strcmp(statetemp, "") != 0) ///Se caso for mais de um estado
                 {
-                    strcat(statetemp,",");
+                    strcat(statetemp, ",");
                 }
-                strcat(statetemp,temp->to);
-
+                strcat(statetemp, temp->to);
             }
-            temp=temp->next;
+            temp = temp->next;
         }
-        return(statetemp);
+        return (statetemp);
     }
-    else    //Para AFD
+    else //Para AFD
     {
-        while(temp!=NULL)
+        while (temp != NULL)
         {
-            if(strcmp(temp->from,state)==0 && strcmp(temp->input,input)==0)
+            if (strcmp(temp->from, state) == 0 && strcmp(temp->input, input) == 0)
             {
 
-                return(temp->to);
-
+                return (temp->to);
             }
-            temp=temp->next;
+            temp = temp->next;
         }
-
-
     }
-
 }
 /***/
-lName* findEdgeNFA (lEdge *Lista, char *state,char *input)
+lName *findEdgeNFA(lEdge *Lista, char *state, char *input)
 {
     lEdge *temp;
     lName *names = NULL;
     lName *tpname;
 
-    temp=Lista;
-    while(temp!=NULL)
+    temp = Lista;
+    while (temp != NULL)
     {
-        if(strcmp(temp->from,state)==0 && strcmp(temp->input,input)==0)
+        if (strcmp(temp->from, state) == 0 && strcmp(temp->input, input) == 0)
         {
             tpname = newLName();
             strcpy(tpname->name, temp->to);
-            putName( &names, tpname );
+            putName(&names, tpname);
         }
-        temp=temp->next;
+        temp = temp->next;
     }
-    return(names);
+    return (names);
 }
 /***/
-lStates* newState ()
+lStates *newState()
 {
-    lStates *new1 = (lStates*) calloc ( sizeof (lStates), 1 );
+    lStates *new1 = (lStates *)calloc(sizeof(lStates), 1);
 
-
-    if ( new1 == NULL )
+    if (new1 == NULL)
     {
-        printf ( " ERRO (lStates): Impossivel montar." );
+        printf(" ERRO (lStates): Impossivel montar.");
     }
     else
     {
 
-        new1->eState=0;
+        new1->eState = 0;
         new1->listname = newLName();
-        strcpy(new1->name,"");
-        new1->next=NULL;
+        strcpy(new1->name, "");
+        new1->next = NULL;
         return new1;
     }
 }
 /***/
-void putState (lStates **Lista,lStates *new1)
+void putState(lStates **Lista, lStates *new1)
 {
-    if(*Lista==NULL)
+    if (*Lista == NULL)
     {
-        new1->next=NULL;
-        *Lista=new1;
+        new1->next = NULL;
+        *Lista = new1;
         return;
     }
 
     else
     {
         lStates *temp;
-        temp=*Lista;
+        temp = *Lista;
 
-        while(temp!=NULL)
+        while (temp != NULL)
         {
-            if(temp->next==NULL)
+            if (temp->next == NULL)
             {
-                new1->next=NULL;
-                temp->next=new1;
+                new1->next = NULL;
+                temp->next = new1;
                 return;
             }
-            temp=temp->next;
+            temp = temp->next;
         }
-
     }
 }
 /***/
-lStates* findState(lStates *Lista,char*key,int op)
+lStates *findState(lStates *Lista, char *key, int op)
 {
     lStates *temp;
 
-    temp=Lista;
+    temp = Lista;
 
-    while(temp!=NULL)
+    while (temp != NULL)
     {
-        if(strcmp(temp->name,key)==0 && op==0) ///Operação de achar estado para marca como estado final
+        if (strcmp(temp->name, key) == 0 && op == 0) ///Operaï¿½ï¿½o de achar estado para marca como estado final
         {
-            temp->eState=1;
+            temp->eState = 1;
             return (temp);
         }
-        else if(strcmp(temp->name,key)==0 && op==1) ///Operação de achar estado para retorna o endereço para atribuir como estado inicial
+        else if (strcmp(temp->name, key) == 0 && op == 1) ///Operaï¿½ï¿½o de achar estado para retorna o endereï¿½o para atribuir como estado inicial
         {
             return (temp);
         }
-        temp=temp->next;
+        temp = temp->next;
     }
     return (temp);
-
 }
-/**Função que retorna se e estado final ou nao se sim 1 se nao 0*/
-int iseState(char *key,lStates *Lista)
+/**Funï¿½ï¿½o que retorna se e estado final ou nao se sim 1 se nao 0*/
+int iseState(char *key, lStates *Lista)
 {
     lStates *temp;
 
-    temp=findState(Lista,key,1);
-    if(temp==NULL)
+    temp = findState(Lista, key, 1);
+    if (temp == NULL)
     {
         printf("\nERRO!");
         exit(42);
     }
-    return(temp->eState);
+    return (temp->eState);
 }
-int findid(char *key,lStates *Lista)
+int findid(char *key, lStates *Lista)
 {
     lStates *temp;
 
-    temp=findState(Lista,key,1);
-    if(temp==NULL)
+    temp = findState(Lista, key, 1);
+    if (temp == NULL)
     {
         printf("\nERRO!");
         exit(42);
     }
     //printf("\n%d",temp->eState);
-    return(temp->id);
+    return (temp->id);
 }
 /***/
-AF* newAF ()
+AF *newAF()
 {
-    AF *new1 = (AF*) calloc ( sizeof (AF), 1 );
+    AF *new1 = (AF *)calloc(sizeof(AF), 1);
 
-
-    if ( new1 == NULL )
+    if (new1 == NULL)
     {
-        printf ( " ERRO (lStates): Impossivel montar." );
+        printf(" ERRO (lStates): Impossivel montar.");
     }
     else
     {
 
-        new1->Alpha=NULL;
-        new1->Start=NULL;
-        new1->States=NULL;
-        new1->Transations=NULL;
+        new1->Alpha = NULL;
+        new1->Start = NULL;
+        new1->States = NULL;
+        new1->Transations = NULL;
         return new1;
     }
 }
-/** Função que pega uma string entre dois caracteries distintos.
+/** Funï¿½ï¿½o que pega uma string entre dois caracteries distintos.
 
-    @param stri     Frase onde a palavra irá ser retirada
+    @param stri     Frase onde a palavra irï¿½ ser retirada
     @param in       caractere de inicio de amazenamento da string
     @param out      caractere de fim de amazenamento da string
     @param Sout     String onde a palavra ira ser amazenada
@@ -418,257 +414,149 @@ AF* newAF ()
 
     @return void
 */
-void separeteforC(char *stri, char in, char out,char *Sout,int cEnable)
+void separeteforC(char *stri, char in, char out, char *Sout, int cEnable)
 {
-    int i=0,enable=0,j=0;
+    int i = 0, enable = 0, j = 0;
 
-    while(enable!=2 && stri[i]!=';' &&(stri[i]!='\0' || stri[i]!='\n' ))
+    while (enable != 2 && stri[i] != ';' && (stri[i] != '\0' || stri[i] != '\n'))
     {
-        if(stri[i]==in && enable==0)
+        if (stri[i] == in && enable == 0)
         {
-            enable=1;
-            cEnable=0;
+            enable = 1;
+            cEnable = 0;
         }
-        else if(stri[i]==out && cEnable==0)
+        else if (stri[i] == out && cEnable == 0)
         {
-            enable=2;
+            enable = 2;
         }
-        else if(enable==1 && stri[i]!=in && stri[i]!=out)
+        else if (enable == 1 && stri[i] != in && stri[i] != out)
         {
-            Sout[j]=stri[i];
-            j=j+1;
+            Sout[j] = stri[i];
+            j = j + 1;
         }
 
-        i=i+1;
-
+        i = i + 1;
     }
-    Sout[j]='\0';
+    Sout[j] = '\0';
 }
 
-/** Função que ler uma arquivo jflap e retira o autonomo descrito
+/** Funï¿½ï¿½o que ler uma arquivo jflap e retira o autonomo descrito
 
     @param arq Nome do arquivo jflap
 
     @return AF Um Automato
 */
 
-AF* readNFA (char *arq)//ler o arquivo por palavras
+AF *readNFA(int nfa_table[][MAXCHAR], int states, int qtdSymbols, char *symbols) //ler o NFA da table
 {
-    char templ[200],inde[100];
-    int cont=0;
-    lEdge *EdgeList=NULL;           /// Lista de edges que sera atribuida ao automato
-    lEdge *nEdge=newEdge();         /// Elemento para a lista de Edges
-    lStates *StateList=NULL;        /// Lista de estados que sera atribuida ao automato
-    lStates *nState=newState();     /// Elemento para a Lista de estados
-    lAlphab *AlphaList=NULL;        /// Lista do simbolos que sera atribuida ao automato(Alfabeto do Automato)
-    lAlphab *nAlpha=newAlphab();    /// Elemento para a Lista de Simbolos
-    AF *AFN=newAF();                /// Automato
+    char templ[200], inde[100];
+    int cont = 0;
+    lEdge *EdgeList = NULL;        /// Lista de edges que sera atribuida ao automato
+    lEdge *nEdge = newEdge();      /// Elemento para a lista de Edges
+    lStates *StateList = NULL;     /// Lista de estados que sera atribuida ao automato
+    lStates *nState = newState();  /// Elemento para a Lista de estados
+    lAlphab *AlphaList = NULL;     /// Lista do simbolos que sera atribuida ao automato(Alfabeto do Automato)
+    lAlphab *nAlpha = newAlphab(); /// Elemento para a Lista de Simbolos
+    AF *AFN = newAF();             /// Automato
+    char str[2] = "\0";            /* gives {\0, \0} */
+    char aux[10];                  /* gives {\0, \0} */
     //system("cls");
 
-    FILE *fp = fopen(arq, "r");
-    //FILE *fp2 = fopen(save, "w");
-    //strcpy(templ,save);
-    if (!fp)
+    // TRANSIÃ‡OES
+    for (int l = 1; l <= states; l++)
     {
-        printf("\nERRO! Impossivel ler arquivo.\n");
-        getchar();
-        exit(42);
-    }
-    while(!feof(fp) && !ferror(fp))
-
-    {
-        fgets(templ,200,fp);
-
-        separeteforC(templ,'"','"',inde,0);
-        if(strcmp(inde,"transition_set")==0) ///Indetificando transitions
+        for (int c = 1; c <= qtdSymbols * 2; c++)
         {
-            cont=0;
-            // printf("\nIndetifico(Trans) : %s\n",inde);
-            fgets(templ,200,fp);
-            separeteforC(templ,'<','>',inde,0);
-            while(strcmp(inde,"/structure")!=0)
+            if (nfa_table[l][c] != -1) // tem um estado
             {
-                //printf("\n\nEntrou no while :%s\n\n",inde);
-                if(strcmp(inde,"input")==0)
+                if (c <= qtdSymbols)
                 {
-                    separeteforC(templ,'>','<',inde,1);
-                    // printf("\nCusto: %s",inde);
-                    strcpy(nEdge->input,inde);
-                    cont++;
+                    str[0] = symbols[c - 1]; // transformar em string
+                    strcpy(nEdge->input, str);
                 }
-                else if(strcmp(inde,"from")==0)
+                else
                 {
-                    fgets(templ,200,fp);
-                    separeteforC(templ,'>','<',inde,1);
-                    // printf("\nOrigem: %s",inde);
-                    strcpy(nEdge->from,inde);
-                    cont++;
-
+                    strcpy(nEdge->input, " "); // colocando lambida
                 }
-                else if(strcmp(inde,"to")==0)
-                {
-                    fgets(templ,200,fp);
-                    separeteforC(templ,'>','<',inde,1);
-                    // printf("\nPara: %s\n",inde);
-                    strcpy(nEdge->to,inde);
-                    cont++;
-
-                }
-
-                fgets(templ,200,fp);
-                separeteforC(templ,'<','>',inde,0);
-
-                if (cont==3)
-                {
-                    putEdge(&EdgeList,nEdge);
-                    nEdge=newEdge();
-                    cont=0;
-
-                }
-
+                sprintf(aux, "%d", l);
+                strcpy(nEdge->from, aux);
+                sprintf(aux, "%d", nfa_table[l][c]);
+                strcpy(nEdge->to, aux);
+                putEdge(&EdgeList, nEdge);
+                nEdge = newEdge();
             }
-            cont=0;
-        }
-        else if(strcmp(inde,"state_set")==0)      ///Indetificando estados
-        {
-            // printf("\n\nIndetifico(state): %s\n",inde);
-            fgets(templ,200,fp);
-            separeteforC(templ,'<','>',inde,0);
-            while(strcmp(inde,"/structure")!=0)
-            {
-                if(strcmp(inde,"name")==0)
-                {
-                    separeteforC(templ,'>','<',inde,1);
-                    // printf("\nEstado: %s\n",inde);
-                    strcpy(nState->name,inde);
-                    if( findState(StateList, nState->name, 1) == NULL)       ///Verificando se o Estado ja se encontra na lista
-                    {
-                        nState->id=cont;
-                        putState(&StateList,nState);
-                        cont++;
-                    }
-                    nState=newState();
-
-                }
-                fgets(templ,200,fp);
-                separeteforC(templ,'<','>',inde,0);
-
-            }
-
-        }
-        else if(strcmp(inde,"final_states")==0)   ///Indetificando estados finais;
-        {
-            // printf("\n\nIndetifico(Final State):%s\n",inde);
-            fgets(templ,200,fp);
-            separeteforC(templ,'<','>',inde,0);
-            while(strcmp(inde,"/structure")!=0)
-            {
-                if(strcmp(inde,"name")==0)
-                {
-                    separeteforC(templ,'>','<',inde,1);
-                    // printf("\nEstado Final: %s\n",inde);
-                    ///Estado já existe?
-                    nState = findState(StateList, inde, 1);
-                    if( nState == NULL )
-                    {   //Nao existe, entao adicione-o...
-                        nState = newState();
-                        strcpy(nState->name,inde);
-                        nState->id=cont;
-                        putState(&StateList,nState);
-                        cont++;
-                    }
-                    //Set like final state
-                    findState(StateList,inde,0);
-                    nState = newState();
-                }
-                fgets(templ,200,fp);
-                separeteforC(templ,'<','>',inde,0);
-            }
-        }
-        else if(strcmp(inde,"start_state")==0)    ///Indetificando estado inicial;
-        {
-            // printf("\n\nIndetifico(Start State):%s\n",inde);
-            fgets(templ,200,fp);
-            separeteforC(templ,'<','>',inde,0);
-            while(strcmp(inde,"/structure")!=0)
-            {
-                if(strcmp(inde,"name")==0)
-                {
-                    separeteforC(templ,'>','<',inde,1);
-                    // printf("\nEstado Inicial: %s\n",inde);
-                    nState = newState();
-                    strcpy(nState->name,inde);
-                    nState->id=cont;
-                    ///Estado já existe?
-                    if( findState(StateList, nState->name, 1) == NULL )
-                    {
-                        //Nao existe, entao adicione-o...
-                        putState(&StateList,nState);
-                        cont++;
-                    }
-                    AFN->Start = findState(StateList, nState->name, 1);
-                    nState = newState();
-                }
-
-                fgets(templ,200,fp);
-                separeteforC(templ,'<','>',inde,0);
-            }
-        }
-        else if(strcmp(inde,"input_alph")==0)     ///Indetificando alfabeto;
-        {
-            // printf("\n\nIndetifico(Alfabeto):%s\n",inde);
-            fgets(templ,200,fp);
-            separeteforC(templ,'<','>',inde,0);
-            while(strcmp(inde,"/structure")!=0)
-            {
-                if(strcmp(inde,"symbol")==0)
-                {
-                    separeteforC(templ,'>','<',inde,1);
-                    // printf("simbolo: %s\n",inde);
-                    strcpy(nAlpha->simbolo,inde);
-                    putAlphab(&AlphaList,nAlpha);
-                    nAlpha=newAlphab();
-                }
-                fgets(templ,200,fp);
-                separeteforC(templ,'<','>',inde,0);
-            }
-
         }
     }
 
-    fclose(fp);
-    AFN->Alpha=AlphaList;
-    AFN->States=StateList;
-    AFN->Transations=EdgeList;
-    printf("\nArquivo lido com sucesso.\n\n");
-    // printf("\nALFABETO: %p",AFN->Alpha);
-    // printf("\nSTART: %p",AFN->Start);
-    // printf("\nESTADOS: %p",AFN->States);
-    // printf("\nEDges: %p",AFN->Transations);
-    return(AFN);
+    // ESTADOS
+
+    for (int i = 0; i < states; i++)
+    {
+        sprintf(aux, "q%d", i + 1);
+        strcpy(nState->name, aux);
+        nState->id = i + 1;
+        putState(&StateList, nState);
+        nState = newState();
+    }
+
+    // ESTADO INICIAL
+    sprintf(aux, "q%d", init[a - 1]);
+    AFN->Start = findState(StateList, aux, 1);
+
+    // ESTADO FINAL
+
+    for (int i = 0; i < b; i++)
+    {
+        sprintf(aux, "q%d", fin[b]);
+        findState(StateList, aux, 0);
+    }
+
+    // ALFABETOS
+
+    for (int i = 0; i < qtdSymbols; i++)
+    {
+        str[0] = symbols[i]; // transformar em string
+        strcpy(nAlpha->simbolo, str);
+        putAlphab(&AlphaList, nAlpha);
+        nAlpha = newAlphab();
+    }
+
+    AFN->Alpha = AlphaList;
+    AFN->States = StateList;
+    AFN->Transations = EdgeList;
+    printf("\nTRANSFORMAÃ‡AO FEITA COM SUCESSO AFN TABLE -> AFN.\n\n");
+
+    // printf("\nALFABETO: %p", AFN->Alpha);
+    // printf("\nSTART: %s", AFN->Start->name);
+    // printf("\nESTADOS: %s", AFN->States);
+    // printf("\nEDges: %p", AFN->Transations);
+    return (AFN);
     system("pause");
-
 }
 /***/
 
 ///Concatena duas listas de nomes recusando as repeticoes de nomes
-void concatLname(lName **original, lName *apendice){
+void concatLname(lName **original, lName *apendice)
+{
     lName *tpo = *original;
     lName *tpa = apendice;
     lName *nname;
     int fgrepeat = 0;
 
-    while(tpa != NULL)
-    {   tpo = *original;
-        while(tpo != NULL)
-        {   if( strcmp(tpo->name, tpa->name)==0 )
+    while (tpa != NULL)
+    {
+        tpo = *original;
+        while (tpo != NULL)
+        {
+            if (strcmp(tpo->name, tpa->name) == 0)
                 fgrepeat = 1;
             tpo = tpo->next;
         }
 
-        if(fgrepeat == 0){//Se nao repetiu, add à lista
+        if (fgrepeat == 0)
+        { //Se nao repetiu, add ï¿½ lista
             nname = newLName();
-            strcpy(nname->name , tpa->name);
+            strcpy(nname->name, tpa->name);
             putName(original, nname);
         }
         fgrepeat = 0;
@@ -676,207 +564,224 @@ void concatLname(lName **original, lName *apendice){
     }
 }
 
-int cmplName( lName *esq, lName *dir)
-{   int qtdeq[2]  = {0,0};
-    int qtddif[2] = {0,0};
+int cmplName(lName *esq, lName *dir)
+{
+    int qtdeq[2] = {0, 0};
+    int qtddif[2] = {0, 0};
     int fgachou = 0;
 
     lName *tesq = esq;
     lName *tdir = dir;
 
-    while(tesq != NULL)
-    {   fgachou = 0;
+    while (tesq != NULL)
+    {
+        fgachou = 0;
         tdir = dir;
-        while(tdir != NULL)
-        {   if( strcmp(tesq->name, tdir->name)==0 )
-            {   fgachou = 1;
+        while (tdir != NULL)
+        {
+            if (strcmp(tesq->name, tdir->name) == 0)
+            {
+                fgachou = 1;
                 qtdeq[0]++;
             }
             tdir = tdir->next;
         }
 
-        if(fgachou == 0)
+        if (fgachou == 0)
             qtddif[0]++;
 
         tesq = tesq->next;
     }
 
     tdir = dir;
-    while(tdir != NULL)
-    {   fgachou = 0;
+    while (tdir != NULL)
+    {
+        fgachou = 0;
         tesq = esq;
-        while(tesq != NULL)
-        {   if( strcmp(tesq->name, tdir->name)==0 )
-            {   fgachou = 1;
+        while (tesq != NULL)
+        {
+            if (strcmp(tesq->name, tdir->name) == 0)
+            {
+                fgachou = 1;
                 qtdeq[1]++;
             }
             tesq = tesq->next;
         }
 
-        if(fgachou == 0)
+        if (fgachou == 0)
             qtddif[1]++;
 
         tdir = tdir->next;
     }
 
-    if( qtdeq[0]==qtdeq[1] && qtddif[0]==0 && qtddif[1]==0)
-        return 0;///Sao iguais
-    /// OU Sao diferentes OU está contido
+    if (qtdeq[0] == qtdeq[1] && qtddif[0] == 0 && qtddif[1] == 0)
+        return 0; ///Sao iguais
+    /// OU Sao diferentes OU estï¿½ contido
     //Caso contrario retorna quantidade de estados em comum e maior que ZERO
-    if( qtdeq[0]==qtdeq[1] && qtdeq[0]>0 && qtdeq[1]>0)
+    if (qtdeq[0] == qtdeq[1] && qtdeq[0] > 0 && qtdeq[1] > 0)
         return qtdeq[0];
     //Erro
     return -1;
 }
 
-lStates* findStateNFA(lStates *Lista, lName *key){
+lStates *findStateNFA(lStates *Lista, lName *key)
+{
     lStates *temp;
 
-    temp=Lista;
+    temp = Lista;
 
-    while(temp!=NULL)
+    while (temp != NULL)
     {
 
-        if(cmplName( temp->listname, key)==0)
+        if (cmplName(temp->listname, key) == 0)
         {
             return (temp);
         }
-        temp=temp->next;
+        temp = temp->next;
     }
     return (temp);
 }
 
-int SetFinalStatesContained(lStates *Final, lStates *Container){
+int SetFinalStatesContained(lStates *Final, lStates *Container)
+{
     lName *finalState = newLName();
-    strcpy( finalState->name, Final->name);
+    strcpy(finalState->name, Final->name);
     finalState->next = NULL;
-    int cont=0;
+    int cont = 0;
 
     lStates *temp;
-    temp=Container;
+    temp = Container;
 
-    while(temp!=NULL)
-    {   int cmp = cmplName( finalState, temp->listname);
-        if( cmp==1 || cmp==0)
+    while (temp != NULL)
+    {
+        int cmp = cmplName(finalState, temp->listname);
+        if (cmp == 1 || cmp == 0)
         {
-            temp->eState=1;
+            temp->eState = 1;
             cont++;
         }
-        temp=temp->next;
+        temp = temp->next;
     }
     return cont;
 }
 
-AF* NFAtoDFA(AF *AFN)
+AF *NFAtoDFA(AF *AFN)
 {
-    lEdge *EdgeList=NULL;           /// Lista de edges que sera atribuida ao automato
-    lEdge *nEdge = NULL;            /// Elemento para a lista de Edges
-    lStates *StateList=NULL;        /// Lista de estados que sera atribuida ao automato
-    lStates *nState=newState();     /// Elemento para a Lista de estados
-    lAlphab *AlphaList=NULL;        /// Lista do simbolos que sera atribuida ao automato(Alfabeto do Automato)
-    lAlphab *nAlpha=newAlphab();    /// Elemento para a Lista de Simbolos
-    AF *AFD=newAF();                /// Automato
-    lName   *nNameList = newLName();
-    lName   *nlName = NULL;
+    lEdge *EdgeList = NULL;        /// Lista de edges que sera atribuida ao automato
+    lEdge *nEdge = NULL;           /// Elemento para a lista de Edges
+    lStates *StateList = NULL;     /// Lista de estados que sera atribuida ao automato
+    lStates *nState = newState();  /// Elemento para a Lista de estados
+    lAlphab *AlphaList = NULL;     /// Lista do simbolos que sera atribuida ao automato(Alfabeto do Automato)
+    lAlphab *nAlpha = newAlphab(); /// Elemento para a Lista de Simbolos
+    AF *AFD = newAF();             /// Automato
+    lName *nNameList = newLName();
+    lName *nlName = NULL;
 
-    int contID=1;
+    int contID = 1;
 
     nlName = newLName();
-    strcpy( nlName->name, AFN->Start->name);
-    strcpy( nState->name, AFN->Start->name );///Add start state
+    strcpy(nlName->name, AFN->Start->name);
+    strcpy(nState->name, AFN->Start->name); ///Add start state
     nState->listname = nlName;
-    nState->id=0;
-    putState(&StateList,nState);
-    AFD->Start=nState;              ///Definindo Estado de Inicio
-//    printf("\n\n\nEstado incial: %s",AFD->Start->name);
+    nState->id = 0;
+    putState(&StateList, nState);
+    AFD->Start = nState; ///Definindo Estado de Inicio
+                         //    printf("\n\n\nEstado incial: %s",AFD->Start->name);
 
-    AlphaList=AFN->Alpha;           ///Same Alphabet
-    AFD->Alpha=AlphaList;
+    AlphaList = AFN->Alpha; ///Same Alphabet
+    AFD->Alpha = AlphaList;
 
     lStates *tempLstates = StateList;
 
-    while( tempLstates != NULL )
+    while (tempLstates != NULL)
     {
-//        printf("\nEstado X: %s\n", tempLstates->name);
+        printf("\nEstado X: %s\n", tempLstates->name);
         lAlphab *templAlphab = AlphaList;
-        while(templAlphab != NULL )
+        while (templAlphab != NULL)
         {
-//            printf("Symbol a: %s\n", templAlphab->simbolo);
+            printf("Symbol a: %s\n", templAlphab->simbolo);
             lName *tpStateName = tempLstates->listname;
             nlName = NULL;
 
             ///Pesquisar estados destino das transicoes com estados origem e simbolo especifico
-            while(tpStateName != NULL)
-            {   lName *namesTo = findEdgeNFA(AFN->Transations, tpStateName->name, templAlphab->simbolo);
-                if(nlName == NULL)
+            while (tpStateName != NULL)
+            {
+                lName *namesTo = findEdgeNFA(AFN->Transations, tpStateName->name, templAlphab->simbolo);
+                if (nlName == NULL)
                     nlName = namesTo;
-                else concatLname(&nlName, namesTo);
+                else
+                    concatLname(&nlName, namesTo);
 
                 tpStateName = tpStateName->next;
             }
 
             ///Se houver transicao:
-            if( nlName!= NULL)
+            if (nlName != NULL)
             {
                 ///Se estado gerado nao estiver na lista, add:
-                nState = findStateNFA( StateList, nlName);
-                if(nState == NULL )
-                {   lName *namesTo = nlName;
+                nState = findStateNFA(StateList, nlName);
+                printf("\nState name: %s\n", nState->name);
+                if (nState == NULL)
+                {
+                    lName *namesTo = nlName;
                     char chnamesTo[100] = "";
-                    while(namesTo != NULL)
-                    {   strcat(chnamesTo, namesTo->name);
-                        if(namesTo->next != NULL) strcat(chnamesTo, ",");
+                    while (namesTo != NULL)
+                    {
+                        strcat(chnamesTo, namesTo->name);
+                        if (namesTo->next != NULL)
+                            strcat(chnamesTo, ",");
                         namesTo = namesTo->next;
                     }
                     nState = newState();
-                    nState->id = contID; contID++;
+                    nState->id = contID;
+                    contID++;
                     nState->listname = nlName;
-                    strcpy( nState->name, chnamesTo);
+                    strcpy(nState->name, chnamesTo);
 
                     putState(&StateList, nState);
                 }
-//                printf(" X com a vai para: %s\n", nState->name);
-
+                printf(" X com a vai para: %s\n", nState->name);
 
                 ///Add nova transicao
                 nEdge = newEdge();
-                strcpy( nEdge->input, templAlphab->simbolo);
-                strcpy( nEdge->from , tempLstates->name);
-                strcpy( nEdge->to   , nState->name);
-                putEdge( &EdgeList, nEdge);
+                strcpy(nEdge->input, templAlphab->simbolo);
+                strcpy(nEdge->from, tempLstates->name);
+                strcpy(nEdge->to, nState->name);
+                putEdge(&EdgeList, nEdge);
             }
 
             templAlphab = templAlphab->next;
-//            printf(" prox symbol: %s\n", templAlphab->simbolo);
+            printf(" prox symbol: %s\n", templAlphab->simbolo);
         }
         tempLstates = tempLstates->next;
     }
 
     ///Reencontrar estados Finais:
     tempLstates = AFN->States;
-//    printf("\nProcurando Estados Finais: \n");
-    while( tempLstates != NULL )
+    //    printf("\nProcurando Estados Finais: \n");
+    while (tempLstates != NULL)
     {
-        if(tempLstates->eState == 1)///Se é estado Final...
-        {   int x = SetFinalStatesContained( tempLstates, StateList );
-//            printf("\nEstado %s encontrado em outros %d estados do AFD resultante \n",
-//                        tempLstates->name, x);
+        if (tempLstates->eState == 1) ///Se ï¿½ estado Final...
+        {
+            int x = SetFinalStatesContained(tempLstates, StateList);
+            printf("\nEstado %s encontrado em outros %d estados do AFD resultante \n",
+                   tempLstates->name, x);
         }
         tempLstates = tempLstates->next;
     }
 
-    AFD->States=StateList;
-    AFD->Transations=EdgeList;
+    AFD->States = StateList;
+    AFD->Transations = EdgeList;
     printf("\n\n AFN Convertido\n");
-    return(AFD);
+    return (AFD);
 }
 
-void saveJflap(AF *AF,char *arq)
+void saveJflap(AF *AF, char *arq)
 {
     lEdge *tempEdge;
     lStates *tempState;
     lAlphab *tempAlpha;
-    FILE *fp = fopen(arq,"w");
+    FILE *fp = fopen(arq, "w");
 
     if (!fp)
     {
@@ -884,127 +789,126 @@ void saveJflap(AF *AF,char *arq)
         getchar();
         exit(42);
     }
-    fprintf(fp,"<?xml version=\"1.0\" encoding=\"UTF-8\"?><structure type=\"editor_panel\">&#13;\n");
-    fprintf(fp,"<structure type=\"transition_graph\">&#13;\n");
-    fprintf(fp,"	<structure mode=\"Default mode\" type=\"fsa\">&#13;\n");
-    fprintf(fp,"		<structure type=\"transition_set\">&#13;\n");
-    tempEdge=AF->Transations;
-    while(tempEdge!=NULL)
+    fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><structure type=\"editor_panel\">&#13;\n");
+    fprintf(fp, "<structure type=\"transition_graph\">&#13;\n");
+    fprintf(fp, "	<structure mode=\"Default mode\" type=\"fsa\">&#13;\n");
+    fprintf(fp, "		<structure type=\"transition_set\">&#13;\n");
+    tempEdge = AF->Transations;
+    while (tempEdge != NULL)
     {
-        fprintf(fp,"		<fsa_trans>&#13;\n");
-        fprintf(fp,"			<input>%s</input>&#13;\n",tempEdge->input);
-        fprintf(fp,"			<from>&#13;;\n");
-        fprintf(fp,"				<name>%s</name>&#13;\n",tempEdge->from);
-        fprintf(fp,"				<id>%d</id>&#13;\n",findid(tempEdge->from,AF->States));
-        fprintf(fp,"			</from>&#13;\n");
-        fprintf(fp,"			<to>&#13;\n");
-        fprintf(fp,"				<name>%s</name>&#13;\n",tempEdge->to);
-        fprintf(fp,"				<id>%d</id>&#13;\n",findid(tempEdge->to,AF->States));
-        fprintf(fp,"			</to>&#13;\n");
-        fprintf(fp,"		</fsa_trans>&#13;\n");
-        tempEdge=tempEdge->next;
+        fprintf(fp, "		<fsa_trans>&#13;\n");
+        fprintf(fp, "			<input>%s</input>&#13;\n", tempEdge->input);
+        fprintf(fp, "			<from>&#13;;\n");
+        fprintf(fp, "				<name>%s</name>&#13;\n", tempEdge->from);
+        fprintf(fp, "				<id>%d</id>&#13;\n", findid(tempEdge->from, AF->States));
+        fprintf(fp, "			</from>&#13;\n");
+        fprintf(fp, "			<to>&#13;\n");
+        fprintf(fp, "				<name>%s</name>&#13;\n", tempEdge->to);
+        fprintf(fp, "				<id>%d</id>&#13;\n", findid(tempEdge->to, AF->States));
+        fprintf(fp, "			</to>&#13;\n");
+        fprintf(fp, "		</fsa_trans>&#13;\n");
+        tempEdge = tempEdge->next;
     }
 
-    fprintf(fp,"</structure>&#13;\n");
-    fprintf(fp,"			<structure type=\"start_state\">&#13;\n");
-    fprintf(fp,"				<state>&#13;\n");
-    fprintf(fp,"					<name>%s</name>&#13;\n",AF->Start->name);
-    fprintf(fp,"					<id>%d</id>&#13;\n",AF->Start->id);
-    fprintf(fp,"				</state>&#13;\n");
-    fprintf(fp,"			</structure>&#13;\n");
-    fprintf(fp,"			<structure type=\"state_set\">&#13;\n");
-    tempState=AF->States;
-    while(tempState!=NULL)
+    fprintf(fp, "</structure>&#13;\n");
+    fprintf(fp, "			<structure type=\"start_state\">&#13;\n");
+    fprintf(fp, "				<state>&#13;\n");
+    fprintf(fp, "					<name>%s</name>&#13;\n", AF->Start->name);
+    fprintf(fp, "					<id>%d</id>&#13;\n", AF->Start->id);
+    fprintf(fp, "				</state>&#13;\n");
+    fprintf(fp, "			</structure>&#13;\n");
+    fprintf(fp, "			<structure type=\"state_set\">&#13;\n");
+    tempState = AF->States;
+    while (tempState != NULL)
     {
-        fprintf(fp,"		<state>&#13;\n");
-        fprintf(fp,"			<name>%s</name>&#13;\n",tempState->name);
-        fprintf(fp,"			<id>%d</id>&#13;\n",tempState->id);
-        fprintf(fp,"		</state>&#13;\n");
-        tempState=tempState->next;
+        fprintf(fp, "		<state>&#13;\n");
+        fprintf(fp, "			<name>%s</name>&#13;\n", tempState->name);
+        fprintf(fp, "			<id>%d</id>&#13;\n", tempState->id);
+        fprintf(fp, "		</state>&#13;\n");
+        tempState = tempState->next;
     }
-    fprintf(fp,"</structure>&#13;\n");
-    fprintf(fp,"			<structure type=\"final_states\">&#13;\n");
-    tempState=AF->States;
-    while(tempState!=NULL)
+    fprintf(fp, "</structure>&#13;\n");
+    fprintf(fp, "			<structure type=\"final_states\">&#13;\n");
+    tempState = AF->States;
+    while (tempState != NULL)
     {
-        if(tempState->eState==1)
+        if (tempState->eState == 1)
         {
-            fprintf(fp,"		<state>&#13;\n");
-            fprintf(fp,"			<name>%s</name>&#13;\n",tempState->name);
-            fprintf(fp,"			<id>%d</id>&#13;\n",tempState->id);
-            fprintf(fp,"		</state>&#13;\n");
+            fprintf(fp, "		<state>&#13;\n");
+            fprintf(fp, "			<name>%s</name>&#13;\n", tempState->name);
+            fprintf(fp, "			<id>%d</id>&#13;\n", tempState->id);
+            fprintf(fp, "		</state>&#13;\n");
         }
-        tempState=tempState->next;
+        tempState = tempState->next;
     }
-    fprintf(fp,"</structure>&#13;\n");
-    fprintf(fp,"		<structure type=\"input_alph\">&#13;\n");
-    tempAlpha=AF->Alpha;
-    while(tempAlpha!=NULL)
+    fprintf(fp, "</structure>&#13;\n");
+    fprintf(fp, "		<structure type=\"input_alph\">&#13;\n");
+    tempAlpha = AF->Alpha;
+    while (tempAlpha != NULL)
     {
-        fprintf(fp,"				<symbol>%s</symbol>&#13;\n",tempAlpha->simbolo);
-        tempAlpha=tempAlpha->next;
+        fprintf(fp, "				<symbol>%s</symbol>&#13;\n", tempAlpha->simbolo);
+        tempAlpha = tempAlpha->next;
     }
-    fprintf(fp,"</structure>&#13;\n");
-    fprintf(fp,"</structure>&#13;\n");
-    fprintf(fp,"	    <state_point_map>&#13;\n");
-    tempState=AF->States;
-    while(tempState!=NULL)
+    fprintf(fp, "</structure>&#13;\n");
+    fprintf(fp, "</structure>&#13;\n");
+    fprintf(fp, "	    <state_point_map>&#13;\n");
+    tempState = AF->States;
+    while (tempState != NULL)
     {
-        fprintf(fp,"       <state_point>&#13;\n");
-        fprintf(fp,"			<state>%d</state>&#13;\n",tempState->id);
-        fprintf(fp,"			<point>&#13;\n");
-        fprintf(fp,"				<x>%d</x>&#13;\n",rand() % 100);
-        fprintf(fp,"				<y>%d</y>&#13;\n",rand() % 100);
-        fprintf(fp,"			</point>&#13;\n");
-        fprintf(fp,"		</state_point>&#13;\n");
-        tempState=tempState->next;
+        fprintf(fp, "       <state_point>&#13;\n");
+        fprintf(fp, "			<state>%d</state>&#13;\n", tempState->id);
+        fprintf(fp, "			<point>&#13;\n");
+        fprintf(fp, "				<x>%d</x>&#13;\n", rand() % 100);
+        fprintf(fp, "				<y>%d</y>&#13;\n", rand() % 100);
+        fprintf(fp, "			</point>&#13;\n");
+        fprintf(fp, "		</state_point>&#13;\n");
+        tempState = tempState->next;
     }
-    fprintf(fp," 		</state_point_map>&#13;\n");
-    fprintf(fp,"	<control_point_map>&#13;\n");
-    tempEdge=AF->Transations;
-    while(tempEdge!=NULL)
+    fprintf(fp, " 		</state_point_map>&#13;\n");
+    fprintf(fp, "	<control_point_map>&#13;\n");
+    tempEdge = AF->Transations;
+    while (tempEdge != NULL)
     {
-        fprintf(fp,"			<control_point>&#13;\n");
-        fprintf(fp,"			<from>%d</from>&#13;\n",findid(tempEdge->from,AF->States));
-        fprintf(fp,"			<to>%d</to>&#13;\n",findid(tempEdge->to,AF->States));
-        fprintf(fp,"			<point>&#13;\n");
-        fprintf(fp,"				<x>%d</x>&#13;\n",rand() % 100);
-        fprintf(fp,"				<y>%d</y>&#13;\n",rand() % 100);
-        fprintf(fp,"			</point>&#13;\n");
-        fprintf(fp,"		</control_point>&#13;\n");
-        tempEdge=tempEdge->next;
+        fprintf(fp, "			<control_point>&#13;\n");
+        fprintf(fp, "			<from>%d</from>&#13;\n", findid(tempEdge->from, AF->States));
+        fprintf(fp, "			<to>%d</to>&#13;\n", findid(tempEdge->to, AF->States));
+        fprintf(fp, "			<point>&#13;\n");
+        fprintf(fp, "				<x>%d</x>&#13;\n", rand() % 100);
+        fprintf(fp, "				<y>%d</y>&#13;\n", rand() % 100);
+        fprintf(fp, "			</point>&#13;\n");
+        fprintf(fp, "		</control_point>&#13;\n");
+        tempEdge = tempEdge->next;
     }
-    fprintf(fp,"    </control_point_map>&#13;\n");
-    fprintf(fp,"   </structure>&#13;\n");
-    fprintf(fp,"	<state_label_map/>&#13;\n");
-    fprintf(fp,"	<note_map/>&#13;\n");
-    fprintf(fp,"</structure>\n");
+    fprintf(fp, "    </control_point_map>&#13;\n");
+    fprintf(fp, "   </structure>&#13;\n");
+    fprintf(fp, "	<state_label_map/>&#13;\n");
+    fprintf(fp, "	<note_map/>&#13;\n");
+    fprintf(fp, "</structure>\n");
 
     fclose(fp);
-
 }
 
-void readSentece(AF *AF,char *sentence)
+void readSentece(AF *AF, char *sentence)
 {
-    int i=0;
+    int i = 0;
     lStates *temp;
-    char nextState[100],tempSimbolo[2];
+    char nextState[100], tempSimbolo[2];
 
-    temp=AF->Start;
-    tempSimbolo[1]='\0';
-    while(sentence[i]!='\0')
+    temp = AF->Start;
+    tempSimbolo[1] = '\0';
+    while (sentence[i] != '\0')
     {
-        tempSimbolo[0]=sentence[i];
-        if(findEdge(AF->Transations,temp->name,tempSimbolo,1)==NULL)
+        tempSimbolo[0] = sentence[i];
+        if (findEdge(AF->Transations, temp->name, tempSimbolo, 1) == NULL)
         {
             printf("\nRejeita\n\n");
             return;
         }
-        printf("\n%c | %s->%s",sentence[i],temp->name,findEdge(AF->Transations,temp->name,tempSimbolo,1));
-        strcpy(nextState,findEdge(AF->Transations,temp->name,tempSimbolo,1));
-        if(strcmp(nextState,"")==0) ///nao tem edge para este simbolo neste estado
+        printf("\n%c | %s->%s", sentence[i], temp->name, findEdge(AF->Transations, temp->name, tempSimbolo, 1));
+        strcpy(nextState, findEdge(AF->Transations, temp->name, tempSimbolo, 1));
+        if (strcmp(nextState, "") == 0) ///nao tem edge para este simbolo neste estado
         {
-            if(iseState(temp->name,AF->States)==1 && sentence[i+1]=='\0')
+            if (iseState(temp->name, AF->States) == 1 && sentence[i + 1] == '\0')
             {
                 printf("\nAceita\n\n");
                 return;
@@ -1017,17 +921,16 @@ void readSentece(AF *AF,char *sentence)
         }
         else
         {
-            temp=findState(AF->States,nextState,1);
-            if(nextState==NULL)
+            temp = findState(AF->States, nextState, 1);
+            if (nextState == NULL)
             {
                 printf("\nRejeita\n\n");
                 return;
             }
         }
         i++;
-
     }
-    if(iseState(temp->name,AF->States)==1 && sentence[i]=='\0')
+    if (iseState(temp->name, AF->States) == 1 && sentence[i] == '\0')
     {
         printf("\nAceita\n\n");
         return;
@@ -1039,61 +942,533 @@ void readSentece(AF *AF,char *sentence)
     }
 }
 
-int main()
+void readExpression(char *arq, char *exp)
 {
-    AF *AFN,*AFD;
-    char aqr[200];
-    int op;
+    char templ[MAXCHAR], inde[MAXCHAR];
+    int i = 0;
 
-    printf("\nDigite o nome do arquivo do jflap a ser lido: ");
-    scanf("%s",aqr);
+    FILE *fp = fopen(arq, "r");
 
-    AFN=readNFA(aqr);
-    AFN->print();
-    AFD=NFAtoDFA(AFN);
-    AFD->print();
-    saveJflap(AFD,"TesteAFD.jflap");
-    do  //system("CLS");
+    if (!fp)
     {
-        printf("\nEscolha uma opcao\n1-Entrada de uma sentenca\n2-Ler outro arquivo Jflap\n3-Sair\n");
-        scanf("%d",&op);
-        if(op==1)
-        {
-            do{
-                printf("\nDigite a sentenca: (z -> voltar ao MENU)   ");
-                scanf("%s",aqr);
-                if(strcmp(aqr, "z")==0)
-                    op=0;
-                else
-                    readSentece(AFD,aqr);
-            }while(op==1);
-        }
-        if(op==2)
-        {
-            printf("\nDigite o nome do arquivo do jflap a ser lido: ");
-            scanf("%s",aqr);
-            free(AFN);
-            free(AFD);
+        printf("\nERRO! Impossivel ler arquivo.\n");
+        getchar();
+        exit(42);
+    }
+    // get xml, type, comment and expression line
+    for (i = 0; i < 4; i++)
+        fgets(templ, MAXCHAR, fp); // xml line
+    separeteforC(templ, '>', '<', exp, 1);
+    fclose(fp);
+}
 
-            AFN=readNFA(aqr);
-            AFN->print();
-            AFD=NFAtoDFA(AFN);
-            AFD->print();
-            saveJflap(AFD,"TesteAFD.jflap");
+/*
+ isStringValid function verify if the symbol is between a-z, A-Z, 0,9
+*/
+
+bool isStringValid(char *s, int i)
+{
+    return ((s[i] >= 97 && s[i] <= 122) || (s[i] >= 65 && s[i] <= 90) || (s[i] >= 48 && s[i] <= 57));
+}
+
+/*
+ isLastStringValid function verify if the symbol is between a-z, A-Z, 0,9
+*/
+
+bool isLastStringValid(char *s, int i)
+{
+    return ((s[i + 1] >= 97 && s[i + 1] < 122) || (s[i + 1] >= 65 && s[i + 1] < 90) || (s[i + 1] >= 48 && s[i + 1] < 57));
+}
+
+/*
+ preprocessor function simplifies the expression, as we have no symbol for concatenation
+ operation. preprocessor function provide one.
+*/
+
+int preprocessor(char *s, char *newExp)
+{
+    char x[MAXCHAR];
+    int l = strlen(s);
+    int j = 0;
+    x[j] = '(';
+    j += 1;
+
+    for (int i = 0; i < l; i++)
+    {
+        x[j] = s[i];
+        j += 1;
+        if (isStringValid(s, i) && isStringValid(s, i + 1))
+        {
+            x[j] = '.';
+            j += 1;
+        }
+        else if (s[i] == ')' && s[i + 1] == '(')
+        {
+            x[j] = '.';
+            j += 1;
+        }
+        else if (isStringValid(s, i) && s[i + 1] == '(')
+        {
+            x[j] = '.';
+            j += 1;
+        }
+        else if (s[i] == ')' && isStringValid(s, i + 1))
+        {
+            x[j] = '.';
+            j += 1;
+        }
+        else if (s[i] == '*' && (s[i + 1] == '(' || isLastStringValid(s, i)))
+        {
+            x[j] = '.';
+            j += 1;
         }
     }
-    while(op!=3);
+    x[j] = ')';
+    j += 1;
+    for (int i = 0; i < j; i++)
+        newExp[i] = x[i];
+    return j;
+}
+
+bool checkIfIsInArray(char s, char *symbols, int qtdSymbols)
+{
+    int i = 0;
+    bool answ = false;
+    while (i < qtdSymbols)
+    {
+        if (symbols[i] == s)
+        {
+            answ = true;
+            break;
+        }
+        i++;
+    }
+    return answ;
+}
+
+int getPositionInArray(char s, char *symbols, int qtdSymbols)
+{
+    int i = 0;
+    while (i < qtdSymbols)
+    {
+        if (symbols[i] == s)
+        {
+            break;
+        }
+        i++;
+    }
+    return i;
+}
+
+bool isSymbolValid(char s)
+{
+    return ((s >= 97 && s <= 122) || (s >= 65 && s <= 90) || (s >= 48 && s <= 57));
+}
+
+int getPositionInArray(char s, int qtdSymbols, char *symbols)
+{
+    int i = 0;
+    while (i < qtdSymbols)
+    {
+        if (symbols[i] == s)
+        {
+            break;
+        }
+        i++;
+    }
+    return i;
+}
+
+void reduce_fin(int x)
+{
+    for (int i = x; i < b - 1; i++)
+        fin[i] = fin[i + 1];
+    b -= 1;
+}
+
+int reg_nfa(char *s, int nfa_table[][MAXCHAR], int qtdSymbols, char *symbols, int l)
+{
+    int states = 1;
+    int m, n, j, counter, position;
+    for (int i = 0; i < l; i++)
+    {
+        char x = s[i];
+
+        if (isSymbolValid(x))
+        {
+            printf("\nValid symbol: %c\n", x);
+            position = getPositionInArray(x, qtdSymbols, symbols);
+            printf("\position symbol: %d\n", position);
+            nfa_table[states][0] = states;
+            init[a] = states;
+            a += 1;
+            states += 1;
+            nfa_table[states - 1][position + 1] = states;
+            fin[b] = states;
+            b += 1;
+            nfa_table[states][0] = states;
+            states += 1;
+            printf("\nstates: %d\n", states);
+        }
+        else
+        {
+            printf("\nInvalid symbol: %c\n", x);
+            switch (x)
+            {
+            case '.':
+                m = fin[b - 2];
+                n = init[a - 1];
+                nfa_table[m][qtdSymbols + 1] = n;
+                reduce_fin(b - 2); //reduces final state
+                a -= 1;            //reduces initial states
+                break;
+            case '+':
+                for (j = a - 1, counter = 0; counter < qtdSymbols; counter++)
+                {
+                    m = init[j - counter];
+                    nfa_table[states][qtdSymbols + 1 + counter] = m;
+                }
+                a = a - 2;
+                init[a] = states;
+                a += 1;
+                nfa_table[states][0] = states;
+                states += 1;
+                for (j = b - 1, counter = 0; counter < qtdSymbols; counter++)
+                {
+                    m = fin[j - counter];
+                    nfa_table[m][qtdSymbols + 1] = states;
+                }
+                b = b - 2;
+                fin[b] = states;
+                b += 1;
+                nfa_table[states][0] = states;
+                states += 1;
+                break;
+            case '*':
+                m = init[a - 1];
+                nfa_table[states][qtdSymbols + 1] = m;
+                nfa_table[states][0] = states;
+                init[a - 1] = states;
+
+                states += 1;
+                n = fin[b - 1];
+                nfa_table[n][qtdSymbols + 1] = m;
+                nfa_table[n][qtdSymbols + 2] = states;
+                nfa_table[states - 1][qtdSymbols + 2] = states;
+                fin[b - 1] = states;
+                nfa_table[states][0] = states;
+                states += 1;
+                break;
+            }
+        }
+    }
+    return states;
+}
+
+void print_initial_final()
+{
+    printf("initial state/s is/are :- ");
+    for (int i = 0; i < a; i++)
+        printf("%d ", init[i]);
+    printf("\n");
+    printf("final state/s is/are :- ");
+    for (int i = 0; i < b; i++)
+        printf("%d ", fin[i]);
+    printf("\n");
+}
+
+void print_nfa_table(int nfa_table[][MAXCHAR], int states, int qtdSymbols, char *symbols)
+{
+    printf("\n");
+    for (int i = 0; i < 60; i++)
+        printf("*");
+    printf("\n\n");
+    printf("                 TRANSITION TABLE FOR NFA\n\n");
+    printf("          States");
+    for (int i = 0; i < qtdSymbols; i++)
+        printf("          %c", symbols[i]);
+    for (int i = 0; i < qtdSymbols; i++)
+        printf("           e");
+    printf("\n");
+    for (int i = 0; i < 35 * qtdSymbols; i++)
+        printf("-");
+    printf("\n");
+
+    for (int i = 1; i < states; i++)
+    {
+        for (int j = 0; j < qtdSymbols * 2 + 1; j++)
+        {
+            if (nfa_table[i][j] == -1)
+                printf("           --");
+            else
+                printf("          %d", nfa_table[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("\n");
+    for (int i = 0; i < 60; i++)
+        printf("*");
+    printf("\n");
+    ;
+    print_initial_final();
+}
+
+void push(char element, char stack[], int *top, int stackSize)
+{
+    if (*top == -1)
+    {
+        stack[stackSize - 1] = element;
+        *top = stackSize - 1;
+    }
+    else if (*top == 0)
+    {
+        //printf("The stack is already full. \n");
+    }
+    else
+    {
+        stack[(*top) - 1] = element;
+        (*top)--;
+    }
+}
+void pop(char stack[], int *top, int stackSize)
+{
+    if (*top == -1)
+    {
+        // printf("The stack is empty. \n");
+    }
+    else
+    {
+        // If the element popped was the last element in the stack
+        // then set top to -1 to show that the stack is empty
+        if ((*top) == stackSize - 1)
+        {
+            (*top) = -1;
+        }
+        else
+        {
+            (*top)++;
+        }
+    }
+}
+
+int postfix(char *s, int sizeExp, int qtdSymbols, char *symbols, char *p)
+{
+    int l = sizeExp;
+    char a[MAXCHAR];
+    char ch[50];
+    int j = 0;
+    int top = -1;
+
+    for (int i = 0; i < l; i++)
+    {
+        char x = s[i];
+        if (isSymbolValid(x))
+        {
+            a[j] = x;
+            j += 1;
+            if (!checkIfIsInArray(x, symbols, qtdSymbols))
+                qtdSymbols++;
+        }
+        switch (x)
+        {
+        case '(':
+            push('(', ch, &top, 50);
+            break;
+        case ')':
+            while (top != -1)
+            {
+                if (ch[top] == '(')
+                {
+                    pop(ch, &top, 50);
+                    break;
+                }
+                else
+                {
+                    a[j] = ch[top];
+                    pop(ch, &top, 50);
+                    j += 1;
+                }
+            }
+            break;
+        case '.':
+            if (top == -1)
+            {
+                push('.', ch, &top, 50);
+            }
+            else
+            {
+                char temp = ch[top];
+                if (temp == '(')
+                    push('.', ch, &top, 50);
+                else if (temp == '*')
+                {
+                    a[j] = ch[top];
+                    pop(ch, &top, 50);
+                    j += 1;
+                    if (ch[top] == '.')
+                    {
+                        a[j] = '.';
+                        j += 1;
+                    }
+                    else
+                    {
+                        push('.', ch, &top, 50);
+                    }
+                }
+                else if (temp == '.')
+                {
+                    a[j] = ch[top];
+                    pop(ch, &top, 50);
+                    j += 1;
+                    push('.', ch, &top, 50);
+                }
+                else if (temp == '+')
+                {
+                    push('.', ch, &top, 50);
+                }
+            }
+            break;
+        case '+':
+            if (top == -1)
+            {
+                push('+', ch, &top, 50);
+            }
+            else
+            {
+                char temp = ch[top];
+                if (temp == '(')
+                    push('+', ch, &top, 50);
+                else if (temp == '*')
+                {
+                    a[j] = ch[top];
+                    pop(ch, &top, 50);
+                    j += 1;
+                    push('+', ch, &top, 50);
+                }
+                else if (temp == '.')
+                {
+                    a[j] = ch[top];
+                    j += 1;
+                    pop(ch, &top, 50);
+                    push('+', ch, &top, 50);
+                }
+            }
+            break;
+        case '*':
+            if (top == -1)
+            {
+                push('*', ch, &top, 50);
+            }
+            else
+            {
+                char temp = ch[top];
+                if (temp == '(' || temp == '.' || temp == '+')
+                    push('*', ch, &top, 50);
+                else
+                {
+                    a[j] = ch[top];
+                    pop(ch, &top, 50);
+                    j += 1;
+                    push('*', ch, &top, 50);
+                }
+            }
+            break;
+        }
+    }
+    for (int i = 0; i < j; i++)
+    {
+        p[i] = a[i];
+    }
+    return j;
+}
+
+int main()
+{
+    AF *AFN, *AFD;
+    char exp[MAXCHAR], newExp[MAXCHAR], newPost[MAXCHAR];
+    char aqr[MAXCHAR], symbols[MAXCHAR];
+    int op, qtdSymbols = 0, i, j, sizeExp = 0;
+    int init[50], fin[50], tamPost;
+    int nfa_table[1000][MAXCHAR];
+    int states = 0;
+    readExpression("exp.jff", exp);
+    printf("\nExpressÃ£o antes: %s\n", exp);
+
+    for (i = 0; i < strlen(exp); i++)
+    {
+        if (isSymbolValid(exp[i]) && !checkIfIsInArray(exp[i], symbols, qtdSymbols))
+        {
+            symbols[qtdSymbols] = exp[i];
+            qtdSymbols++;
+        }
+    }
+
+    printf("\nSimbolos: %s\n", symbols);
+    printf("\nQts simbol: %d\n", qtdSymbols);
+
+    // dois estados lambidas aux. e uma coluna com os estados
+
+    //initialize table
+
+    for (i = 0; i < 1000; i++)
+    {
+        for (j = 0; j < qtdSymbols * 2 + 1; j++)
+        {
+            nfa_table[i][j] = -1;
+        }
+    }
+
+    sizeExp = preprocessor(exp, newExp);
+
+    printf("\nExpressÃ£o: %s\n", newExp);
+
+    tamPost = postfix(newExp, sizeExp, qtdSymbols, symbols, newPost);
+
+    printf("\nExpressÃ£o Post: %s\n", newPost);
+
+    states = reg_nfa(newPost, nfa_table, qtdSymbols, symbols, tamPost);
+    print_nfa_table(nfa_table, states, qtdSymbols, symbols);
+
+    AFN = readNFA(nfa_table, states, qtdSymbols, symbols);
+    AFN->print();
+
+    AFD = NFAtoDFA(AFN);
+    AFD->print();
+    //AFN = EXtoNFA(AFN);
+    // AFD->print();
+    // saveJflap(AFD, "TesteAFD.jflap");
+    // do //system("CLS");
+    // {
+    //     printf("\nEscolha uma opcao\n1-Entrada de uma sentenca\n2-Ler outro arquivo Jflap\n3-Sair\n");
+    //     scanf("%d", &op);
+    //     if (op == 1)
+    //     {
+    //         do
+    //         {
+    //             printf("\nDigite a sentenca: (z -> voltar ao MENU)   ");
+    //             scanf("%s", aqr);
+    //             if (strcmp(aqr, "z") == 0)
+    //                 op = 0;
+    //             else
+    //                 readSentece(AFD, aqr);
+    //         } while (op == 1);
+    //     }
+    //     if (op == 2)
+    //     {
+    //         printf("\nDigite o nome do arquivo do jflap a ser lido: ");
+    //         scanf("%s", aqr);
+    //         free(AFN);
+    //         free(AFD);
+
+    //         AFN = readNFA(aqr);
+    //         AFN->print();
+    //         AFD = NFAtoDFA(AFN);
+    //         AFD->print();
+    //         saveJflap(AFD, "TesteAFD.jflap");
+    //     }
+    // } while (op != 3);
     free(AFN);
     free(AFD);
     return 0;
 }
-
-
-
-
-
-
-
-
-
-
