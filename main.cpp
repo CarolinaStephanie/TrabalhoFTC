@@ -490,11 +490,11 @@ AF *readNFA(int nfa_table[][MAXCHAR], int states, int qtdSymbols, char *symbols)
 
     // ESTADOS
 
-    for (int i = 0; i < states; i++)
+    for (int i = 1; i < states; i++)
     {
-        sprintf(aux, "q%d", i + 1);
+        sprintf(aux, "q%d", i);
         strcpy(nState->name, aux);
-        nState->id = i + 1;
+        nState->id = i;
         putState(&StateList, nState);
         nState = newState();
     }
@@ -507,7 +507,7 @@ AF *readNFA(int nfa_table[][MAXCHAR], int states, int qtdSymbols, char *symbols)
 
     for (int i = 0; i < b; i++)
     {
-        sprintf(aux, "q%d", fin[b]);
+        sprintf(aux, "q%d", fin[i]);
         findState(StateList, aux, 0);
     }
 
@@ -1470,5 +1470,6 @@ int main()
     // } while (op != 3);
     free(AFN);
     free(AFD);
+    system("pause");
     return 0;
 }
