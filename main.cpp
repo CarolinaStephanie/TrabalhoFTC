@@ -1575,5 +1575,6 @@ int main()
     // } while (op != 3);
     free(AFN);
     free(AFD);
+    system("pause");
     return 0;
 }
