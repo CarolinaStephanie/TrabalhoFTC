@@ -467,7 +467,7 @@ AF *readNFA(int nfa_table[][MAXCHAR], int states, int qtdSymbols, char *symbols)
     {
         for (int c = 1; c <= qtdSymbols * 2; c++)
         {
-            if (nfa_table[l][c] != -1) // tem um estado
+            if (nfa_table[l][c] != -1 && nfa_table[l][c] != 0) // tem um estado e não é lixo
             {
                 if (c <= qtdSymbols)
                 {
@@ -490,11 +490,11 @@ AF *readNFA(int nfa_table[][MAXCHAR], int states, int qtdSymbols, char *symbols)
 
     // ESTADOS
 
-    for (int i = 0; i < states; i++)
+    for (int i = 1; i < states; i++)
     {
-        sprintf(aux, "q%d", i + 1);
+        sprintf(aux, "q%d", i);
         strcpy(nState->name, aux);
-        nState->id = i + 1;
+        nState->id = i;
         putState(&StateList, nState);
         nState = newState();
     }
@@ -507,7 +507,7 @@ AF *readNFA(int nfa_table[][MAXCHAR], int states, int qtdSymbols, char *symbols)
 
     for (int i = 0; i < b; i++)
     {
-        sprintf(aux, "q%d", fin[b]);
+        sprintf(aux, "q%d", fin[i]);
         findState(StateList, aux, 0);
     }
 
@@ -1096,9 +1096,7 @@ int reg_nfa(char *s, int nfa_table[][MAXCHAR], int qtdSymbols, char *symbols, in
 
         if (isSymbolValid(x))
         {
-            printf("\nValid symbol: %c\n", x);
             position = getPositionInArray(x, qtdSymbols, symbols);
-            printf("\position symbol: %d\n", position);
             nfa_table[states][0] = states;
             init[a] = states;
             a += 1;
@@ -1108,11 +1106,9 @@ int reg_nfa(char *s, int nfa_table[][MAXCHAR], int qtdSymbols, char *symbols, in
             b += 1;
             nfa_table[states][0] = states;
             states += 1;
-            printf("\nstates: %d\n", states);
         }
         else
         {
-            printf("\nInvalid symbol: %c\n", x);
             switch (x)
             {
             case '.':
@@ -1232,6 +1228,44 @@ void push(char element, char stack[], int *top, int stackSize)
     }
 }
 void pop(char stack[], int *top, int stackSize)
+{
+    if (*top == -1)
+    {
+        // printf("The stack is empty. \n");
+    }
+    else
+    {
+        // If the element popped was the last element in the stack
+        // then set top to -1 to show that the stack is empty
+        if ((*top) == stackSize - 1)
+        {
+            (*top) = -1;
+        }
+        else
+        {
+            (*top)++;
+        }
+    }
+}
+
+void pushInt(int element, int stack[], int *top, int stackSize)
+{
+    if (*top == -1)
+    {
+        stack[stackSize - 1] = element;
+        *top = stackSize - 1;
+    }
+    else if (*top == 0)
+    {
+        //printf("The stack is already full. \n");
+    }
+    else
+    {
+        stack[(*top) - 1] = element;
+        (*top)--;
+    }
+}
+void popInt(int stack[], int *top, int stackSize)
 {
     if (*top == -1)
     {
@@ -1383,6 +1417,75 @@ int postfix(char *s, int sizeExp, int qtdSymbols, char *symbols, char *p)
     return j;
 }
 
+bool checkState(int matrizFechoLambida[][MAXCHAR], int state, int linha, int qtdStates) // conferindo se o estado ja foi colocado no fecho
+{
+    int j = 0;
+    bool result = false;
+    while (j < qtdStates)
+    {
+        if (matrizFechoLambida[linha][j] == state)
+        {
+            result = true;
+            break;
+        }
+        j++;
+    }
+    return result;
+}
+void tableLamToAFN(int nfa_table[][MAXCHAR], int states, int qtdSymbols)
+{
+    int matrizFechoLambida[states + 1][MAXCHAR];
+    int pilha[states]; // pilha
+    int j = 1;
+    int top = -1;
+    int analise = 0;
+    // todo mundo tem ele mesmo no fecho
+    for (int p = 1; p < states; p++)
+    {
+        matrizFechoLambida[p][0] = p;
+    }
+
+    j++;
+    // printf("states: %d\n", states);
+    for (int l = 1; l < states; l++)
+    {
+        for (int c = qtdSymbols + 1; c <= qtdSymbols * 2; c++)
+        {
+            if (nfa_table[l][c] != -1 && nfa_table[l][c] != 0) // tem um estado e não é lixo
+            {
+                //  printf("colocou na pilha: %d\n", nfa_table[l][c]);
+                pushInt(nfa_table[l][c], pilha, &top, states);
+            }
+        }
+        //  printf("Da linha: %d\n", l);
+        while (top != -1) // enquanto tem coisa na pilha
+        {
+            analise = pilha[top];
+            popInt(pilha, &top, states);                             //tira da pilha
+                                                                     //  printf("analise: %d\n", analise);
+            if (!checkState(matrizFechoLambida, analise, l, states)) // nao ta la no fecho, acrescenta
+            {
+                matrizFechoLambida[l][j] = analise;
+                j++;
+                // analise percorre a tabela e todos que tem lamb coloca na pilha
+                for (int q = qtdSymbols + 1; q <= qtdSymbols * 2; q++)
+                {
+                    if (nfa_table[analise][q] != -1 && nfa_table[analise][q] != 0) // tem um estado e não é lixo
+                    {
+                        pushInt(nfa_table[analise][q], pilha, &top, states); // poe na pilha
+                    }
+                }
+            }
+        }
+        while (j < states)
+        {
+            matrizFechoLambida[l][j] = -1; // coloca vazio no restante
+            j++;
+        }
+        j = 2; // volta pro inicio
+    }
+}
+
 int main()
 {
     AF *AFN, *AFD;
@@ -1392,9 +1495,9 @@ int main()
     int init[50], fin[50], tamPost;
     int nfa_table[1000][MAXCHAR];
     int states = 0;
+    fflush(stdin);
     readExpression("exp.jff", exp);
     printf("\nExpressão antes: %s\n", exp);
-
     for (i = 0; i < strlen(exp); i++)
     {
         if (isSymbolValid(exp[i]) && !checkIfIsInArray(exp[i], symbols, qtdSymbols))
@@ -1431,10 +1534,12 @@ int main()
     print_nfa_table(nfa_table, states, qtdSymbols, symbols);
 
     AFN = readNFA(nfa_table, states, qtdSymbols, symbols);
-    AFN->print();
+    //AFN->print();
 
-    AFD = NFAtoDFA(AFN);
-    AFD->print();
+    tableLamToAFN(nfa_table, states, qtdSymbols);
+
+    // AFD = NFAtoDFA(AFN);
+    // AFD->print();
     //AFN = EXtoNFA(AFN);
     // AFD->print();
     // saveJflap(AFD, "TesteAFD.jflap");
