@@ -789,102 +789,39 @@ void saveJflap(AF *AF, char *arq)
         getchar();
         exit(42);
     }
-    fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><structure type=\"editor_panel\">&#13;\n");
-    fprintf(fp, "<structure type=\"transition_graph\">&#13;\n");
-    fprintf(fp, "	<structure mode=\"Default mode\" type=\"fsa\">&#13;\n");
-    fprintf(fp, "		<structure type=\"transition_set\">&#13;\n");
-    tempEdge = AF->Transations;
-    while (tempEdge != NULL)
+    fprintf(fp, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><!--Created with JFLAP 6.4.--><structure>\n");
+    fprintf(fp, "	<type>fa</type>\n");
+    fprintf(fp, "	<automaton>\n");
+    fprintf(fp, "		<!--The list of states.-->\n");
+
+    tempState = AF->States;
+    while (tempState != NULL)
     {
-        fprintf(fp, "		<fsa_trans>&#13;\n");
-        fprintf(fp, "			<input>%s</input>&#13;\n", tempEdge->input);
-        fprintf(fp, "			<from>&#13;;\n");
-        fprintf(fp, "				<name>%s</name>&#13;\n", tempEdge->from);
-        fprintf(fp, "				<id>%d</id>&#13;\n", findid(tempEdge->from, AF->States));
-        fprintf(fp, "			</from>&#13;\n");
-        fprintf(fp, "			<to>&#13;\n");
-        fprintf(fp, "				<name>%s</name>&#13;\n", tempEdge->to);
-        fprintf(fp, "				<id>%d</id>&#13;\n", findid(tempEdge->to, AF->States));
-        fprintf(fp, "			</to>&#13;\n");
-        fprintf(fp, "		</fsa_trans>&#13;\n");
-        tempEdge = tempEdge->next;
+        fprintf(fp, "		<state id=\"%d\" name=\"%s\">\n", tempState->id, tempState->name);
+        fprintf(fp, "			<x>%d</x>\n", rand() % 100);
+        fprintf(fp, "			<y>%d</y>\n", rand() % 100);
+        if (strcmp(tempState->name, AF->Start->name) == 0) // é estado inicial
+            fprintf(fp, "			<initial/>\n");
+        if (tempState->eState == 1) // é estado final
+            fprintf(fp, "			<final/>\n");
+        fprintf(fp, "		</state>\n");
+        tempState = tempState->next;
     }
 
-    fprintf(fp, "</structure>&#13;\n");
-    fprintf(fp, "			<structure type=\"start_state\">&#13;\n");
-    fprintf(fp, "				<state>&#13;\n");
-    fprintf(fp, "					<name>%s</name>&#13;\n", AF->Start->name);
-    fprintf(fp, "					<id>%d</id>&#13;\n", AF->Start->id);
-    fprintf(fp, "				</state>&#13;\n");
-    fprintf(fp, "			</structure>&#13;\n");
-    fprintf(fp, "			<structure type=\"state_set\">&#13;\n");
-    tempState = AF->States;
-    while (tempState != NULL)
-    {
-        fprintf(fp, "		<state>&#13;\n");
-        fprintf(fp, "			<name>%s</name>&#13;\n", tempState->name);
-        fprintf(fp, "			<id>%d</id>&#13;\n", tempState->id);
-        fprintf(fp, "		</state>&#13;\n");
-        tempState = tempState->next;
-    }
-    fprintf(fp, "</structure>&#13;\n");
-    fprintf(fp, "			<structure type=\"final_states\">&#13;\n");
-    tempState = AF->States;
-    while (tempState != NULL)
-    {
-        if (tempState->eState == 1)
-        {
-            fprintf(fp, "		<state>&#13;\n");
-            fprintf(fp, "			<name>%s</name>&#13;\n", tempState->name);
-            fprintf(fp, "			<id>%d</id>&#13;\n", tempState->id);
-            fprintf(fp, "		</state>&#13;\n");
-        }
-        tempState = tempState->next;
-    }
-    fprintf(fp, "</structure>&#13;\n");
-    fprintf(fp, "		<structure type=\"input_alph\">&#13;\n");
-    tempAlpha = AF->Alpha;
-    while (tempAlpha != NULL)
-    {
-        fprintf(fp, "				<symbol>%s</symbol>&#13;\n", tempAlpha->simbolo);
-        tempAlpha = tempAlpha->next;
-    }
-    fprintf(fp, "</structure>&#13;\n");
-    fprintf(fp, "</structure>&#13;\n");
-    fprintf(fp, "	    <state_point_map>&#13;\n");
-    tempState = AF->States;
-    while (tempState != NULL)
-    {
-        fprintf(fp, "       <state_point>&#13;\n");
-        fprintf(fp, "			<state>%d</state>&#13;\n", tempState->id);
-        fprintf(fp, "			<point>&#13;\n");
-        fprintf(fp, "				<x>%d</x>&#13;\n", rand() % 100);
-        fprintf(fp, "				<y>%d</y>&#13;\n", rand() % 100);
-        fprintf(fp, "			</point>&#13;\n");
-        fprintf(fp, "		</state_point>&#13;\n");
-        tempState = tempState->next;
-    }
-    fprintf(fp, " 		</state_point_map>&#13;\n");
-    fprintf(fp, "	<control_point_map>&#13;\n");
+    fprintf(fp, "		<!--The list of transitions.-->\n");
     tempEdge = AF->Transations;
     while (tempEdge != NULL)
     {
-        fprintf(fp, "			<control_point>&#13;\n");
-        fprintf(fp, "			<from>%d</from>&#13;\n", findid(tempEdge->from, AF->States));
-        fprintf(fp, "			<to>%d</to>&#13;\n", findid(tempEdge->to, AF->States));
-        fprintf(fp, "			<point>&#13;\n");
-        fprintf(fp, "				<x>%d</x>&#13;\n", rand() % 100);
-        fprintf(fp, "				<y>%d</y>&#13;\n", rand() % 100);
-        fprintf(fp, "			</point>&#13;\n");
-        fprintf(fp, "		</control_point>&#13;\n");
+
+        fprintf(fp, "		<transition>\n");
+        fprintf(fp, "			<from>%d</from>\n", findid(tempEdge->from, AF->States));
+        fprintf(fp, "			<to>%d</to>\n", findid(tempEdge->to, AF->States));
+        fprintf(fp, "			<read>%s</read>\n", tempEdge->input);
+        fprintf(fp, "		</transition>\n");
         tempEdge = tempEdge->next;
     }
-    fprintf(fp, "    </control_point_map>&#13;\n");
-    fprintf(fp, "   </structure>&#13;\n");
-    fprintf(fp, "	<state_label_map/>&#13;\n");
-    fprintf(fp, "	<note_map/>&#13;\n");
+    fprintf(fp, "	</automaton>\n");
     fprintf(fp, "</structure>\n");
-
     fclose(fp);
 }
 
@@ -1432,9 +1369,8 @@ bool checkState(int matrizFechoLambida[][MAXCHAR], int state, int linha, int qtd
     }
     return result;
 }
-void tableLamToAFN(int nfa_table[][MAXCHAR], int states, int qtdSymbols)
+void tableLamToAFN(int nfa_table[][MAXCHAR], int states, int qtdSymbols, int matrizFechoLambida[][MAXCHAR])
 {
-    int matrizFechoLambida[states + 1][MAXCHAR];
     int pilha[states]; // pilha
     int j = 1;
     int top = -1;
@@ -1443,6 +1379,7 @@ void tableLamToAFN(int nfa_table[][MAXCHAR], int states, int qtdSymbols)
     for (int p = 1; p < states; p++)
     {
         matrizFechoLambida[p][0] = p;
+        matrizFechoLambida[p][1] = p;
     }
 
     j++;
@@ -1486,6 +1423,113 @@ void tableLamToAFN(int nfa_table[][MAXCHAR], int states, int qtdSymbols)
     }
 }
 
+void printTableFecho(int matrizFechoLambida[][MAXCHAR], int states)
+{
+    for (int x = 1; x < states; x++)
+    {
+        for (int y = 0; y < states; y++)
+        {
+            printf("%d     ", matrizFechoLambida[x][y]);
+        }
+        printf("\n");
+    }
+}
+
+AF *matrizFechoToAFN(int matrizFechoLambida[][MAXCHAR], int nfa_table[][MAXCHAR], int states, int qtdSymbols, char *symbols)
+{
+    char templ[200], inde[100];
+    int cont = 0;
+    lEdge *EdgeList = NULL;        /// Lista de edges que sera atribuida ao automato
+    lEdge *nEdge = newEdge();      /// Elemento para a lista de Edges
+    lStates *StateList = NULL;     /// Lista de estados que sera atribuida ao automato
+    lStates *nState = newState();  /// Elemento para a Lista de estados
+    lAlphab *AlphaList = NULL;     /// Lista do simbolos que sera atribuida ao automato(Alfabeto do Automato)
+    lAlphab *nAlpha = newAlphab(); /// Elemento para a Lista de Simbolos
+    AF *AFN = newAF();             /// Automato
+    char str[2] = "\0";            /* gives {\0, \0} */
+    char aux[10];                  /* gives {\0, \0} */
+    //system("cls");
+    int colFecho = 1, colFecho2 = 1, newFecho = 0, estadoDoFecho, estadoDoFecho2;
+    for (int state = 1; state < states; state++)
+    {
+        for (int symbol = 1; symbol <= qtdSymbols; symbol++)
+        {
+            estadoDoFecho = matrizFechoLambida[state][colFecho];
+            //printf("\nEstado fecho: %d\n", matrizFechoLambida[state][colFecho]);
+            while (matrizFechoLambida[state][colFecho] != -1)
+            {
+                estadoDoFecho2 = nfa_table[matrizFechoLambida[state][colFecho]][symbol];
+                // tem transicao desse estado com esse simbolo?
+                if (estadoDoFecho2 != -1)
+                {
+                    // se sim pega o for no fecho dessa transicao e vai criando edge
+                    while (matrizFechoLambida[estadoDoFecho2][colFecho2] != -1)
+                    {
+                        newFecho = matrizFechoLambida[estadoDoFecho2][colFecho2];
+                        str[0] = symbols[symbol - 1]; // transformar em string
+                        strcpy(nEdge->input, str);
+                        sprintf(aux, "q%d", state);
+                        strcpy(nEdge->from, aux);
+                        sprintf(aux, "q%d", newFecho);
+                        strcpy(nEdge->to, aux);
+                        putEdge(&EdgeList, nEdge);
+                        nEdge = newEdge();
+                        colFecho2++;
+                    }
+                    colFecho2 = 1;
+                }
+
+                colFecho++;
+            }
+            colFecho = 1;
+        }
+    }
+
+    // ESTADOS
+
+    for (int i = 1; i < states; i++)
+    {
+        sprintf(aux, "q%d", i);
+        strcpy(nState->name, aux);
+        nState->id = i;
+        putState(&StateList, nState);
+        nState = newState();
+    }
+
+    // ESTADO INICIAL
+    sprintf(aux, "q%d", init[a - 1]);
+    AFN->Start = findState(StateList, aux, 1);
+
+    // ESTADO FINAL
+
+    for (int i = 0; i < b; i++)
+    {
+        sprintf(aux, "q%d", fin[i]);
+        findState(StateList, aux, 0);
+    }
+
+    // ALFABETOS
+
+    for (int i = 0; i < qtdSymbols; i++)
+    {
+        str[0] = symbols[i]; // transformar em string
+        strcpy(nAlpha->simbolo, str);
+        putAlphab(&AlphaList, nAlpha);
+        nAlpha = newAlphab();
+    }
+
+    AFN->Alpha = AlphaList;
+    AFN->States = StateList;
+    AFN->Transations = EdgeList;
+    printf("\nTRANSFORMAÇAO FEITA COM SUCESSO AFN TABLE -> AFN.\n\n");
+
+    // printf("\nALFABETO: %p", AFN->Alpha);
+    // printf("\nSTART: %s", AFN->Start->name);
+    // printf("\nESTADOS: %s", AFN->States);
+    // printf("\nEDges: %p", AFN->Transations);
+    return (AFN);
+}
+
 int main()
 {
     AF *AFN, *AFD;
@@ -1495,6 +1539,7 @@ int main()
     int init[50], fin[50], tamPost;
     int nfa_table[1000][MAXCHAR];
     int states = 0;
+
     fflush(stdin);
     readExpression("exp.jff", exp);
     printf("\nExpressão antes: %s\n", exp);
@@ -1533,48 +1578,21 @@ int main()
     states = reg_nfa(newPost, nfa_table, qtdSymbols, symbols, tamPost);
     print_nfa_table(nfa_table, states, qtdSymbols, symbols);
 
-    AFN = readNFA(nfa_table, states, qtdSymbols, symbols);
-    //AFN->print();
-
-    tableLamToAFN(nfa_table, states, qtdSymbols);
-
-    // AFD = NFAtoDFA(AFN);
+    int matrizFechoLambida[states + 1][MAXCHAR];
+    tableLamToAFN(nfa_table, states, qtdSymbols, matrizFechoLambida);
+    // printTableFecho(matrizFechoLambida, states);
+    AFN = matrizFechoToAFN(matrizFechoLambida, nfa_table, states, qtdSymbols, symbols);
+    // AFN->print();
+    AFD = NFAtoDFA(AFN);
     // AFD->print();
-    //AFN = EXtoNFA(AFN);
-    // AFD->print();
-    // saveJflap(AFD, "TesteAFD.jflap");
-    // do //system("CLS");
-    // {
-    //     printf("\nEscolha uma opcao\n1-Entrada de uma sentenca\n2-Ler outro arquivo Jflap\n3-Sair\n");
-    //     scanf("%d", &op);
-    //     if (op == 1)
-    //     {
-    //         do
-    //         {
-    //             printf("\nDigite a sentenca: (z -> voltar ao MENU)   ");
-    //             scanf("%s", aqr);
-    //             if (strcmp(aqr, "z") == 0)
-    //                 op = 0;
-    //             else
-    //                 readSentece(AFD, aqr);
-    //         } while (op == 1);
-    //     }
-    //     if (op == 2)
-    //     {
-    //         printf("\nDigite o nome do arquivo do jflap a ser lido: ");
-    //         scanf("%s", aqr);
-    //         free(AFN);
-    //         free(AFD);
-
-    //         AFN = readNFA(aqr);
-    //         AFN->print();
-    //         AFD = NFAtoDFA(AFN);
-    //         AFD->print();
-    //         saveJflap(AFD, "TesteAFD.jflap");
-    //     }
-    // } while (op != 3);
+    saveJflap(AFD, "AFD_GERADO.jff");
+    do //system("CLS");
+    {
+        printf("\nDigite a sentenca:   ");
+        scanf("%s", aqr);
+        readSentece(AFD, aqr);
+    } while (1);
     free(AFN);
     free(AFD);
-    system("pause");
     return 0;
 }
