@@ -524,7 +524,6 @@ AF *readNFA(int nfa_table[][MAXCHAR], int states, int qtdSymbols, char *symbols)
     AFN->Alpha = AlphaList;
     AFN->States = StateList;
     AFN->Transations = EdgeList;
-    printf("\nTRANSFORMAÇAO FEITA COM SUCESSO AFN TABLE -> AFN.\n\n");
 
     // printf("\nALFABETO: %p", AFN->Alpha);
     // printf("\nSTART: %s", AFN->Start->name);
@@ -695,11 +694,11 @@ AF *NFAtoDFA(AF *AFN)
 
     while (tempLstates != NULL)
     {
-        printf("\nEstado X: %s\n", tempLstates->name);
+        // printf("\nEstado X: %s\n", tempLstates->name);
         lAlphab *templAlphab = AlphaList;
         while (templAlphab != NULL)
         {
-            printf("Symbol a: %s\n", templAlphab->simbolo);
+            // printf("Symbol a: %s\n", templAlphab->simbolo);
             lName *tpStateName = tempLstates->listname;
             nlName = NULL;
 
@@ -720,7 +719,7 @@ AF *NFAtoDFA(AF *AFN)
             {
                 ///Se estado gerado nao estiver na lista, add:
                 nState = findStateNFA(StateList, nlName);
-                printf("\nState name: %s\n", nState->name);
+                // printf("\nState name: %s\n", nState->name);
                 if (nState == NULL)
                 {
                     lName *namesTo = nlName;
@@ -740,7 +739,7 @@ AF *NFAtoDFA(AF *AFN)
 
                     putState(&StateList, nState);
                 }
-                printf(" X com a vai para: %s\n", nState->name);
+                //  printf(" X com a vai para: %s\n", nState->name);
 
                 ///Add nova transicao
                 nEdge = newEdge();
@@ -751,7 +750,7 @@ AF *NFAtoDFA(AF *AFN)
             }
 
             templAlphab = templAlphab->next;
-            printf(" prox symbol: %s\n", templAlphab->simbolo);
+            //  printf(" prox symbol: %s\n", templAlphab->simbolo);
         }
         tempLstates = tempLstates->next;
     }
@@ -764,15 +763,14 @@ AF *NFAtoDFA(AF *AFN)
         if (tempLstates->eState == 1) ///Se � estado Final...
         {
             int x = SetFinalStatesContained(tempLstates, StateList);
-            printf("\nEstado %s encontrado em outros %d estados do AFD resultante \n",
-                   tempLstates->name, x);
+            //  printf("\nEstado %s encontrado em outros %d estados do AFD resultante \n",
+            //       tempLstates->name, x);
         }
         tempLstates = tempLstates->next;
     }
 
     AFD->States = StateList;
     AFD->Transations = EdgeList;
-    printf("\n\n AFN Convertido\n");
     return (AFD);
 }
 
@@ -838,21 +836,21 @@ void readSentece(AF *AF, char *sentence)
         tempSimbolo[0] = sentence[i];
         if (findEdge(AF->Transations, temp->name, tempSimbolo, 1) == NULL)
         {
-            printf("\nRejeita\n\n");
+            printf("Rejeita");
             return;
         }
-        printf("\n%c | %s->%s", sentence[i], temp->name, findEdge(AF->Transations, temp->name, tempSimbolo, 1));
+        // printf("\n%c | %s->%s", sentence[i], temp->name, findEdge(AF->Transations, temp->name, tempSimbolo, 1));
         strcpy(nextState, findEdge(AF->Transations, temp->name, tempSimbolo, 1));
         if (strcmp(nextState, "") == 0) ///nao tem edge para este simbolo neste estado
         {
             if (iseState(temp->name, AF->States) == 1 && sentence[i + 1] == '\0')
             {
-                printf("\nAceita\n\n");
+                printf("Aceita");
                 return;
             }
             else
             {
-                printf("\nRejeita\n\n");
+                printf("Rejeita");
                 return;
             }
         }
@@ -861,7 +859,7 @@ void readSentece(AF *AF, char *sentence)
             temp = findState(AF->States, nextState, 1);
             if (nextState == NULL)
             {
-                printf("\nRejeita\n\n");
+                printf("Rejeita");
                 return;
             }
         }
@@ -869,12 +867,12 @@ void readSentece(AF *AF, char *sentence)
     }
     if (iseState(temp->name, AF->States) == 1 && sentence[i] == '\0')
     {
-        printf("\nAceita\n\n");
+        printf("Aceita");
         return;
     }
     else
     {
-        printf("\nRejeita\n\n");
+        printf("Rejeita");
         return;
     }
 }
@@ -1521,13 +1519,38 @@ AF *matrizFechoToAFN(int matrizFechoLambida[][MAXCHAR], int nfa_table[][MAXCHAR]
     AFN->Alpha = AlphaList;
     AFN->States = StateList;
     AFN->Transations = EdgeList;
-    printf("\nTRANSFORMAÇAO FEITA COM SUCESSO AFN TABLE -> AFN.\n\n");
+    //  printf("\nTRANSFORMAÇAO FEITA COM SUCESSO AFN TABLE -> AFN.\n\n");
 
     // printf("\nALFABETO: %p", AFN->Alpha);
     // printf("\nSTART: %s", AFN->Start->name);
     // printf("\nESTADOS: %s", AFN->States);
     // printf("\nEDges: %p", AFN->Transations);
     return (AFN);
+}
+
+void validateSentence(AF *AFD)
+{
+    char templ[MAXCHAR];
+    char *result;
+
+    FILE *fp = fopen("input.txt", "r");
+    if (!fp)
+    {
+        printf("\nERRO! Impossivel ler arquivo.\n");
+        getchar();
+        exit(42);
+    }
+    while (!feof(fp))
+    {
+        result = fgets(templ, 100, fp);
+        if (result)
+        {
+            printf("Sentença: %s ", templ);
+            readSentece(AFD, templ);
+            printf("\n");
+        }
+    };
+    fclose(fp);
 }
 
 int main()
@@ -1542,7 +1565,7 @@ int main()
 
     fflush(stdin);
     readExpression("exp.jff", exp);
-    printf("\nExpressão antes: %s\n", exp);
+    printf("\nEXPRESSAO ORIGINAL: %s\n", exp);
     for (i = 0; i < strlen(exp); i++)
     {
         if (isSymbolValid(exp[i]) && !checkIfIsInArray(exp[i], symbols, qtdSymbols))
@@ -1551,12 +1574,12 @@ int main()
             qtdSymbols++;
         }
     }
-
-    printf("\nSimbolos: %s\n", symbols);
-    printf("\nQts simbol: %d\n", qtdSymbols);
-
-    // dois estados lambidas aux. e uma coluna com os estados
-
+    printf("\n\nSIMBOLOS: ");
+    for (j = 0; j < qtdSymbols; j++)
+    {
+        printf("%c ", symbols[j]);
+    }
+    printf("\n");
     //initialize table
 
     for (i = 0; i < 1000; i++)
@@ -1569,29 +1592,29 @@ int main()
 
     sizeExp = preprocessor(exp, newExp);
 
-    printf("\nExpressão: %s\n", newExp);
+    printf("\nEXPRESSAO: %s\n", newExp);
 
     tamPost = postfix(newExp, sizeExp, qtdSymbols, symbols, newPost);
 
-    printf("\nExpressão Post: %s\n", newPost);
+    // printf("\nExpressão Post: %s\n", newPost);
 
     states = reg_nfa(newPost, nfa_table, qtdSymbols, symbols, tamPost);
-    print_nfa_table(nfa_table, states, qtdSymbols, symbols);
-
+    // print_nfa_table(nfa_table, states, qtdSymbols, symbols);
+    printf("\n\nFEZ AFN LAMBIDA!!\n\n");
     int matrizFechoLambida[states + 1][MAXCHAR];
     tableLamToAFN(nfa_table, states, qtdSymbols, matrizFechoLambida);
     // printTableFecho(matrizFechoLambida, states);
+
     AFN = matrizFechoToAFN(matrizFechoLambida, nfa_table, states, qtdSymbols, symbols);
+    printf("\n\nFEZ AFN LAMBIDA -> AFN !!\n\n");
     // AFN->print();
     AFD = NFAtoDFA(AFN);
     // AFD->print();
+    printf("\n\nFEZ AFN -> AFD!!\n\n");
     saveJflap(AFD, "AFD_GERADO.jff");
-    do //system("CLS");
-    {
-        printf("\nDigite a sentenca:   ");
-        scanf("%s", aqr);
-        readSentece(AFD, aqr);
-    } while (1);
+    printf("\n\nGEROU ARQUIVO AFD!!\n\n");
+    validateSentence(AFD);
+
     free(AFN);
     free(AFD);
     return 0;
