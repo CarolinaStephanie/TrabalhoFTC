@@ -1510,23 +1510,21 @@ AF *matrizFechoToAFN(int matrizFechoLambida[][MAXCHAR], int nfa_table[][MAXCHAR]
     {
         sprintf(aux, "q%d", fin[p]);
         findState(StateList, aux, 0);
-    }   
+    }
 
-    for(int i = 1; i<states; i ++ ) 
+    for (int i = 1; i < states; i++)
     {
         for (int p = 0; p < b; p++)
         {
-            if(matrizFechoLambida[init[a - 1]][i] == fin[p])
+            if (matrizFechoLambida[init[a - 1]][i] == fin[p])
             {
                 sprintf(aux, "q%d", init[a - 1]);
                 findState(StateList, aux, 0);
                 i = states;
-                p =b;
+                p = b;
             }
-        }   
+        }
     }
-    
-
 
     // ALFABETOS
 
@@ -1568,16 +1566,18 @@ void validateSentence(AF *AFD)
     {
         //result = fgets(templ, 100, fp);
         result = fscanf(fp, "%s\n", &templ);
-        if(strcmp(templ, "-") == 0)
+        if (strcmp(templ, "-") == 0)
         {
             strcpy(templ, "");
         }
         if (result)
         {
-            if(strcmp(templ, "") == 0)
+            if (strcmp(templ, "") == 0)
             {
                 printf("Sentenca lambida: ");
-            }else {
+            }
+            else
+            {
                 printf("Sentenca %s: ", templ);
             }
             readSentece(AFD, templ);
@@ -1639,7 +1639,7 @@ int main()
     //printf("\nExpressão Post: %s\n", newPost);
 
     states = reg_nfa(newPost, nfa_table, qtdSymbols, symbols, tamPost);
-     //print_nfa_table(nfa_table, states, qtdSymbols, symbols);
+    //print_nfa_table(nfa_table, states, qtdSymbols, symbols);
     printf("\n\nFEZ AFN LAMBIDA!!\n\n");
     int matrizFechoLambida[states + 1][MAXCHAR];
     tableLamToAFN(nfa_table, states, qtdSymbols, matrizFechoLambida);
@@ -1649,7 +1649,7 @@ int main()
     printf("\n\nFEZ AFN LAMBIDA -> AFN !!\n\n");
     // AFN->print();
     AFD = NFAtoDFA(AFN);
-   //  AFD->print();
+    //  AFD->print();
     printf("\n\nFEZ AFN -> AFD!!\n\n");
     saveJflap(AFD, "AFD_GERADO.jff");
     printf("\n\nGEROU ARQUIVO AFD!!\n\n");
