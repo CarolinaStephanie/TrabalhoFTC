@@ -961,7 +961,10 @@ int preprocessor(char *s, char *newExp)
     x[j] = ')';
     j += 1;
     for (int i = 0; i < j; i++)
+    {
         newExp[i] = x[i];
+    }
+        
     return j;
 }
 
@@ -1531,8 +1534,10 @@ AF *matrizFechoToAFN(int matrizFechoLambida[][MAXCHAR], int nfa_table[][MAXCHAR]
 void validateSentence(AF *AFD)
 {
     char templ[MAXCHAR];
-    char *result;
-
+    int num;
+    int result;
+    int l;
+    fflush(stdin);
     FILE *fp = fopen("input.txt", "r");
     if (!fp)
     {
@@ -1542,10 +1547,11 @@ void validateSentence(AF *AFD)
     }
     while (!feof(fp))
     {
-        result = fgets(templ, 100, fp);
+        //result = fgets(templ, 100, fp);
+        result = fscanf(fp, "%s\n", &templ); 
         if (result)
         {
-            printf("Sentença: %s ", templ);
+            printf("Sentenca: %s ", templ);
             readSentece(AFD, templ);
             printf("\n");
         }
@@ -1589,14 +1595,19 @@ int main()
             nfa_table[i][j] = -1;
         }
     }
-
+    fflush(stdin);
     sizeExp = preprocessor(exp, newExp);
+    printf("\nEXPRESSAO: ");
 
-    printf("\nEXPRESSAO: %s\n", newExp);
+    for (j = 0; j < sizeExp; j++)
+    {
+        printf("%c", newExp[j]);
+    }
+    printf("\n");
 
     tamPost = postfix(newExp, sizeExp, qtdSymbols, symbols, newPost);
 
-    // printf("\nExpressão Post: %s\n", newPost);
+    //printf("\nExpressão Post: %s\n", newPost);
 
     states = reg_nfa(newPost, nfa_table, qtdSymbols, symbols, tamPost);
     // print_nfa_table(nfa_table, states, qtdSymbols, symbols);

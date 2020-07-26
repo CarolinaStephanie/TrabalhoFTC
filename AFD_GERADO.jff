@@ -3,21 +3,21 @@
 	<automaton>
 		<!--The list of states.-->
 		<state id="0" name="q7">
-			<x>7</x>
-			<y>49</y>
+			<x>41</x>
+			<y>67</y>
 			<initial/>
 		</state>
 		<state id="1" name="q2,q3">
-			<x>73</x>
-			<y>58</y>
+			<x>34</x>
+			<y>0</y>
 		</state>
 		<state id="2" name="q4,q5">
-			<x>30</x>
-			<y>72</y>
+			<x>69</x>
+			<y>24</y>
 		</state>
 		<state id="3" name="q6,q8,q1">
-			<x>44</x>
-			<y>78</y>
+			<x>78</x>
+			<y>58</y>
 			<final/>
 		</state>
 		<!--The list of transitions.-->
