@@ -465,7 +465,7 @@ AF *readNFA(int nfa_table[][MAXCHAR], int states, int qtdSymbols, char *symbols)
     // TRANSIÇOES
     for (int l = 1; l <= states; l++)
     {
-        for (int c = 1; c <= qtdSymbols * 2; c++)
+        for (int c = 1; c <= states; c++)
         {
             if (nfa_table[l][c] != -1 && nfa_table[l][c] != 0) // tem um estado e não é lixo
             {
@@ -831,7 +831,6 @@ void readSentece(AF *AF, char *sentence)
 
     temp = AF->Start;
     tempSimbolo[1] = '\0';
-    printf("\nsentence %c", sentence[i]);
     while (sentence[i] != '\0')
     {
         tempSimbolo[0] = sentence[i];
@@ -1032,10 +1031,11 @@ int reg_nfa(char *s, int nfa_table[][MAXCHAR], int qtdSymbols, char *symbols, in
     for (int i = 0; i < l; i++)
     {
         char x = s[i];
-
+        printf("Symbol: %c\n", x);
         if (isSymbolValid(x))
         {
             position = getPositionInArray(x, qtdSymbols, symbols);
+            printf("position: %d\n", position);
             nfa_table[states][0] = states;
             init[a] = states;
             a += 1;
@@ -1131,7 +1131,7 @@ void print_nfa_table(int nfa_table[][MAXCHAR], int states, int qtdSymbols, char 
 
     for (int i = 1; i < states; i++)
     {
-        for (int j = 0; j < qtdSymbols * 2 + 1; j++)
+        for (int j = 0; j < states - 1; j++)
         {
             if (nfa_table[i][j] == -1)
                 printf("           --");
@@ -1388,7 +1388,7 @@ void tableLamToAFN(int nfa_table[][MAXCHAR], int states, int qtdSymbols, int mat
     // printf("states: %d\n", states);
     for (int l = 1; l < states; l++)
     {
-        for (int c = qtdSymbols + 1; c <= qtdSymbols * 2; c++)
+        for (int c = qtdSymbols + 1; c <= states; c++)
         {
             if (nfa_table[l][c] != -1 && nfa_table[l][c] != 0) // tem um estado e não é lixo
             {
@@ -1407,7 +1407,7 @@ void tableLamToAFN(int nfa_table[][MAXCHAR], int states, int qtdSymbols, int mat
                 matrizFechoLambida[l][j] = analise;
                 j++;
                 // analise percorre a tabela e todos que tem lamb coloca na pilha
-                for (int q = qtdSymbols + 1; q <= qtdSymbols * 2; q++)
+                for (int q = qtdSymbols + 1; q <= states; q++)
                 {
                     if (nfa_table[analise][q] != -1 && nfa_table[analise][q] != 0) // tem um estado e não é lixo
                     {
@@ -1503,12 +1503,30 @@ AF *matrizFechoToAFN(int matrizFechoLambida[][MAXCHAR], int nfa_table[][MAXCHAR]
     AFN->Start = findState(StateList, aux, 1);
 
     // ESTADO FINAL
+    // intersecao do fecho lambida do estado inicial com os estados finais
+    // se diferente vazio o inicial final
 
-    for (int i = 0; i < b; i++)
+    for (int p = 0; p < b; p++)
     {
-        sprintf(aux, "q%d", fin[i]);
+        sprintf(aux, "q%d", fin[p]);
         findState(StateList, aux, 0);
+    }   
+
+    for(int i = 1; i<states; i ++ ) 
+    {
+        for (int p = 0; p < b; p++)
+        {
+            if(matrizFechoLambida[init[a - 1]][i] == fin[p])
+            {
+                sprintf(aux, "q%d", init[a - 1]);
+                findState(StateList, aux, 0);
+                i = states;
+                p =b;
+            }
+        }   
     }
+    
+
 
     // ALFABETOS
 
@@ -1550,9 +1568,18 @@ void validateSentence(AF *AFD)
     {
         //result = fgets(templ, 100, fp);
         result = fscanf(fp, "%s\n", &templ);
+        if(strcmp(templ, "-") == 0)
+        {
+            strcpy(templ, "");
+        }
         if (result)
         {
-            printf("Sentenca: %s ", templ);
+            if(strcmp(templ, "") == 0)
+            {
+                printf("Sentenca lambida: ");
+            }else {
+                printf("Sentenca %s: ", templ);
+            }
             readSentece(AFD, templ);
             printf("\n");
         }
@@ -1608,20 +1635,21 @@ int main()
 
     tamPost = postfix(newExp, sizeExp, qtdSymbols, symbols, newPost);
 
+    //printf("\nTam Post: %d\n", tamPost);
     //printf("\nExpressão Post: %s\n", newPost);
 
     states = reg_nfa(newPost, nfa_table, qtdSymbols, symbols, tamPost);
-    // print_nfa_table(nfa_table, states, qtdSymbols, symbols);
+     //print_nfa_table(nfa_table, states, qtdSymbols, symbols);
     printf("\n\nFEZ AFN LAMBIDA!!\n\n");
     int matrizFechoLambida[states + 1][MAXCHAR];
     tableLamToAFN(nfa_table, states, qtdSymbols, matrizFechoLambida);
-    // printTableFecho(matrizFechoLambida, states);
+    //printTableFecho(matrizFechoLambida, states);
 
     AFN = matrizFechoToAFN(matrizFechoLambida, nfa_table, states, qtdSymbols, symbols);
     printf("\n\nFEZ AFN LAMBIDA -> AFN !!\n\n");
     // AFN->print();
     AFD = NFAtoDFA(AFN);
-    // AFD->print();
+   //  AFD->print();
     printf("\n\nFEZ AFN -> AFD!!\n\n");
     saveJflap(AFD, "AFD_GERADO.jff");
     printf("\n\nGEROU ARQUIVO AFD!!\n\n");
