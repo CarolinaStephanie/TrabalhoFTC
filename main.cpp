@@ -1031,11 +1031,9 @@ int reg_nfa(char *s, int nfa_table[][MAXCHAR], int qtdSymbols, char *symbols, in
     for (int i = 0; i < l; i++)
     {
         char x = s[i];
-        printf("Symbol: %c\n", x);
         if (isSymbolValid(x))
         {
             position = getPositionInArray(x, qtdSymbols, symbols);
-            printf("position: %d\n", position);
             nfa_table[states][0] = states;
             init[a] = states;
             a += 1;
@@ -1555,7 +1553,7 @@ void validateSentence(AF *AFD)
     int result;
     int l;
     fflush(stdin);
-    FILE *fp = fopen("input.txt", "r");
+    FILE *fp = fopen("expressoes/input.txt", "r");
     if (!fp)
     {
         printf("\nERRO! Impossivel ler arquivo.\n");
@@ -1589,73 +1587,93 @@ void validateSentence(AF *AFD)
 
 int main()
 {
-    AF *AFN, *AFD;
-    char exp[MAXCHAR], newExp[MAXCHAR], newPost[MAXCHAR];
-    char aqr[MAXCHAR], symbols[MAXCHAR];
-    int op, qtdSymbols = 0, i, j, sizeExp = 0;
-    int init[50], fin[50], tamPost;
-    int nfa_table[1000][MAXCHAR];
-    int states = 0;
-
-    fflush(stdin);
-    readExpression("exp.jff", exp);
-    printf("\nEXPRESSAO ORIGINAL: %s\n", exp);
-    for (i = 0; i < strlen(exp); i++)
+    bool continuar = true;
+    while (continuar)
     {
-        if (isSymbolValid(exp[i]) && !checkIfIsInArray(exp[i], symbols, qtdSymbols))
+        AF *AFN, *AFD;
+        char exp[MAXCHAR], newExp[MAXCHAR], newPost[MAXCHAR];
+        char aqr[MAXCHAR], symbols[MAXCHAR];
+        int op, qtdSymbols = 0, i, j, sizeExp = 0;
+        int init[50], fin[50], tamPost;
+        int nfa_table[1000][MAXCHAR];
+        int states = 0;
+
+        fflush(stdin);
+
+        char arquivo[20] = "expressoes/";
+        char nome[20] = "";
+        char outroArquivo = 'n';
+        system("cls");
+        printf("\n**************************************************\n");
+        printf("\nDigite o nome do arquivo que deseja abrir: ");
+        scanf("%s", &nome);
+
+        strcat(arquivo, nome);
+        strcat(arquivo, ".jff");
+
+        readExpression(arquivo, exp);
+
+        printf("\nEXPRESSAO ORIGINAL: %s", exp);
+        for (i = 0; i < strlen(exp); i++)
         {
-            symbols[qtdSymbols] = exp[i];
-            qtdSymbols++;
+            if (isSymbolValid(exp[i]) && !checkIfIsInArray(exp[i], symbols, qtdSymbols))
+            {
+                symbols[qtdSymbols] = exp[i];
+                qtdSymbols++;
+            }
         }
-    }
-    printf("\n\nSIMBOLOS: ");
-    for (j = 0; j < qtdSymbols; j++)
-    {
-        printf("%c ", symbols[j]);
-    }
-    printf("\n");
-    //initialize table
-
-    for (i = 0; i < 1000; i++)
-    {
-        for (j = 0; j < qtdSymbols * 2 + 1; j++)
+        printf("\nSIMBOLOS: ");
+        for (j = 0; j < qtdSymbols; j++)
         {
-            nfa_table[i][j] = -1;
+            printf("%c ", symbols[j]);
         }
+        //initialize table
+
+        for (i = 0; i < 1000; i++)
+        {
+            for (j = 0; j < qtdSymbols * 2 + 1; j++)
+            {
+                nfa_table[i][j] = -1;
+            }
+        }
+        fflush(stdin);
+        sizeExp = preprocessor(exp, newExp);
+        //printf("\nEXPRESSAO: ");
+        // for (j = 0; j < sizeExp; j++)
+        // {
+        //     printf("%c", newExp[j]);
+        // }
+        printf("\n\n");
+
+        tamPost = postfix(newExp, sizeExp, qtdSymbols, symbols, newPost);
+
+        //printf("\nTam Post: %d\n", tamPost);
+        //printf("\nExpressão Post: %s\n", newPost);
+
+        states = reg_nfa(newPost, nfa_table, qtdSymbols, symbols, tamPost);
+        //print_nfa_table(nfa_table, states, qtdSymbols, symbols);
+        //printf("\nFEZ AFN LAMBIDA!!");
+        int matrizFechoLambida[states + 1][MAXCHAR];
+        tableLamToAFN(nfa_table, states, qtdSymbols, matrizFechoLambida);
+        //printTableFecho(matrizFechoLambida, states);
+
+        AFN = matrizFechoToAFN(matrizFechoLambida, nfa_table, states, qtdSymbols, symbols);
+        //printf("\nFEZ AFN LAMBIDA -> AFN !!");
+        // AFN->print();
+        AFD = NFAtoDFA(AFN);
+        //  AFD->print();
+        //printf("\nFEZ AFN -> AFD!!");
+        saveJflap(AFD, "AFD_GERADO.jff");
+        //printf("\nGEROU ARQUIVO AFD!!\n\n");
+        validateSentence(AFD);
+
+        free(AFN);
+        free(AFD);
+
+        printf("\n\n Deseja abrir outro arquivo? S/N ");
+        scanf("%s", &outroArquivo);
+        if (outroArquivo == 'n' || outroArquivo == 'N')
+            continuar = false;
     }
-    fflush(stdin);
-    sizeExp = preprocessor(exp, newExp);
-    printf("\nEXPRESSAO: ");
-
-    for (j = 0; j < sizeExp; j++)
-    {
-        printf("%c", newExp[j]);
-    }
-    printf("\n");
-
-    tamPost = postfix(newExp, sizeExp, qtdSymbols, symbols, newPost);
-
-    //printf("\nTam Post: %d\n", tamPost);
-    //printf("\nExpressão Post: %s\n", newPost);
-
-    states = reg_nfa(newPost, nfa_table, qtdSymbols, symbols, tamPost);
-    //print_nfa_table(nfa_table, states, qtdSymbols, symbols);
-    printf("\n\nFEZ AFN LAMBIDA!!\n\n");
-    int matrizFechoLambida[states + 1][MAXCHAR];
-    tableLamToAFN(nfa_table, states, qtdSymbols, matrizFechoLambida);
-    //printTableFecho(matrizFechoLambida, states);
-
-    AFN = matrizFechoToAFN(matrizFechoLambida, nfa_table, states, qtdSymbols, symbols);
-    printf("\n\nFEZ AFN LAMBIDA -> AFN !!\n\n");
-    // AFN->print();
-    AFD = NFAtoDFA(AFN);
-    //  AFD->print();
-    printf("\n\nFEZ AFN -> AFD!!\n\n");
-    saveJflap(AFD, "AFD_GERADO.jff");
-    printf("\n\nGEROU ARQUIVO AFD!!\n\n");
-    validateSentence(AFD);
-
-    free(AFN);
-    free(AFD);
     return 0;
 }

@@ -2,27 +2,41 @@
 	<type>fa</type>
 	<automaton>
 		<!--The list of states.-->
-		<state id="0" name="q3">
-			<x>41</x>
-			<y>67</y>
+		<state id="0" name="q11">
+			<x>69</x>
+			<y>12</y>
 			<initial/>
 			<final/>
 		</state>
-		<state id="1" name="q2,q4,q1">
-			<x>34</x>
-			<y>0</y>
+		<state id="1" name="q8,q10,q12,q9,q5,q6,q1,q3,q7,q2">
+			<x>67</x>
+			<y>99</y>
 			<final/>
+		</state>
+		<state id="2" name="q4">
+			<x>35</x>
+			<y>94</y>
 		</state>
 		<!--The list of transitions.-->
 		<transition>
 			<from>0</from>
 			<to>1</to>
-			<read>1</read>
+			<read>a</read>
+		</transition>
+		<transition>
+			<from>0</from>
+			<to>2</to>
+			<read>b</read>
 		</transition>
 		<transition>
 			<from>1</from>
 			<to>1</to>
-			<read>1</read>
+			<read>a</read>
+		</transition>
+		<transition>
+			<from>1</from>
+			<to>2</to>
+			<read>b</read>
 		</transition>
 	</automaton>
 </structure>
