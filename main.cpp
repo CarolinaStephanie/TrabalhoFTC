@@ -659,7 +659,9 @@ int SetFinalStatesContained(lStates *Final, lStates *Container)
     while (temp != NULL)
     {
         int cmp = cmplName(finalState, temp->listname);
-        if (cmp == 1 || cmp == 0)
+        // printf("\ncmp : %d\n", cmp);
+        // printf("\nTemp : %s\n", temp->name);
+        if (cmp >= 0)
         {
             temp->eState = 1;
             cont++;
@@ -765,11 +767,11 @@ AF *NFAtoDFA(AF *AFN)
     //    printf("\nProcurando Estados Finais: \n");
     while (tempLstates != NULL)
     {
+        // printf("\nEstados : %s\n", tempLstates->name);
         if (tempLstates->eState == 1) ///Se � estado Final...
         {
             int x = SetFinalStatesContained(tempLstates, StateList);
-            //  printf("\nEstado %s encontrado em outros %d estados do AFD resultante \n",
-            //       tempLstates->name, x);
+            // printf("\nEstado %s encontrado em outros %d estados do AFD resultante \n", tempLstates->name, x);
         }
         tempLstates = tempLstates->next;
     }
@@ -1592,95 +1594,88 @@ void validateSentence(AF *AFD)
 
 int main()
 {
-    bool continuar = true;
-    while (continuar)
+    AF *AFN, *AFD;
+    char exp[MAXCHAR], newExp[MAXCHAR], newPost[MAXCHAR];
+    char aqr[MAXCHAR], symbols[MAXCHAR];
+    int op, qtdSymbols = 0, i, j, sizeExp = 0;
+    int init[50], fin[50], tamPost;
+    int nfa_table[1000][MAXCHAR];
+    int states = 0;
+    char arquivoSalvar[20] = "AFD_GERADO.jff";
+
+    fflush(stdin);
+    tempNome = (char *)malloc(20 * sizeof(char));
+    char arquivo[20] = "expressoes/";
+    char outroArquivo = 'n';
+
+    printf("\n**************************************************\n");
+    printf("\nDigite o nome do arquivo que deseja abrir: ");
+    scanf("%s", tempNome);
+    fflush(stdin);
+    strcat(arquivo, tempNome);
+    strcat(arquivo, ".jff");
+
+    readExpression(arquivo, exp);
+
+    printf("\nEXPRESSAO ORIGINAL: %s", exp);
+    for (i = 0; i < strlen(exp); i++)
     {
-        AF *AFN, *AFD;
-        char exp[MAXCHAR], newExp[MAXCHAR], newPost[MAXCHAR];
-        char aqr[MAXCHAR], symbols[MAXCHAR];
-        int op, qtdSymbols = 0, i, j, sizeExp = 0;
-        int init[50], fin[50], tamPost;
-        int nfa_table[1000][MAXCHAR];
-        int states = 0;
-        char arquivoSalvar[20] = "AFD_GERADO.jff";
-
-        fflush(stdin);
-        tempNome = (char *)malloc(20 * sizeof(char));
-        char arquivo[20] = "expressoes/";
-        char outroArquivo = 'n';
-
-        printf("\n**************************************************\n");
-        printf("\nDigite o nome do arquivo que deseja abrir: ");
-        scanf("%s", tempNome);
-
-        strcat(arquivo, tempNome);
-        strcat(arquivo, ".jff");
-
-        readExpression(arquivo, exp);
-
-        printf("\nEXPRESSAO ORIGINAL: %s", exp);
-        for (i = 0; i < strlen(exp); i++)
+        if (isSymbolValid(exp[i]) && !checkIfIsInArray(exp[i], symbols, qtdSymbols))
         {
-            if (isSymbolValid(exp[i]) && !checkIfIsInArray(exp[i], symbols, qtdSymbols))
-            {
-                symbols[qtdSymbols] = exp[i];
-                qtdSymbols++;
-            }
+            symbols[qtdSymbols] = exp[i];
+            qtdSymbols++;
         }
-        printf("\nSIMBOLOS: ");
-        for (j = 0; j < qtdSymbols; j++)
-        {
-            printf("%c ", symbols[j]);
-        }
-        //initialize table
-
-        for (i = 0; i < 1000; i++)
-        {
-            for (j = 0; j < qtdSymbols * 2 + 1; j++)
-            {
-                nfa_table[i][j] = -1;
-            }
-        }
-        fflush(stdin);
-        sizeExp = preprocessor(exp, newExp);
-        //printf("\nEXPRESSAO: ");
-        // for (j = 0; j < sizeExp; j++)
-        // {
-        //     printf("%c", newExp[j]);
-        // }
-        printf("\n\n");
-
-        tamPost = postfix(newExp, sizeExp, qtdSymbols, symbols, newPost);
-
-        //printf("\nTam Post: %d\n", tamPost);
-        //printf("\nExpressão Post: %s\n", newPost);
-
-        states = reg_nfa(newPost, nfa_table, qtdSymbols, symbols, tamPost);
-        //print_nfa_table(nfa_table, states, qtdSymbols, symbols);
-        //printf("\nFEZ AFN LAMBIDA!!");
-        int matrizFechoLambida[states + 1][MAXCHAR];
-        tableLamToAFN(nfa_table, states, qtdSymbols, matrizFechoLambida);
-        //printTableFecho(matrizFechoLambida, states);
-
-        AFN = matrizFechoToAFN(matrizFechoLambida, nfa_table, states, qtdSymbols, symbols);
-        //printf("\nFEZ AFN LAMBIDA -> AFN !!");
-        // AFN->print();
-        AFD = NFAtoDFA(AFN);
-        //  AFD->print();
-        //printf("\nFEZ AFN -> AFD!!");
-        saveJflap(AFD, arquivoSalvar);
-        //printf("\nGEROU ARQUIVO AFD!!\n\n");
-        validateSentence(AFD);
-
-        free(AFN);
-        free(AFD);
-        free(tempNome);
-        free(statetemp);
-        free(tempSentence);
-        printf("\n\n Deseja abrir outro arquivo? S/N ");
-        scanf("%s", &outroArquivo);
-        if (outroArquivo == 'n' || outroArquivo == 'N')
-            continuar = false;
     }
+    fflush(stdin);
+    printf("\nSIMBOLOS: ");
+    for (j = 0; j < qtdSymbols; j++)
+    {
+        printf("%c ", symbols[j]);
+    }
+    //initialize table
+
+    for (i = 0; i < 1000; i++)
+    {
+        for (j = 0; j < qtdSymbols * 2 + 1; j++)
+        {
+            nfa_table[i][j] = -1;
+        }
+    }
+    fflush(stdin);
+    sizeExp = preprocessor(exp, newExp);
+    //printf("\nEXPRESSAO: ");
+    // for (j = 0; j < sizeExp; j++)
+    // {
+    //     printf("%c", newExp[j]);
+    // }
+    printf("\n\n");
+
+    tamPost = postfix(newExp, sizeExp, qtdSymbols, symbols, newPost);
+
+    //printf("\nTam Post: %d\n", tamPost);
+    //printf("\nExpressão Post: %s\n", newPost);
+
+    states = reg_nfa(newPost, nfa_table, qtdSymbols, symbols, tamPost);
+    //print_nfa_table(nfa_table, states, qtdSymbols, symbols);
+    //printf("\nFEZ AFN LAMBIDA!!");
+    int matrizFechoLambida[states + 1][MAXCHAR];
+    tableLamToAFN(nfa_table, states, qtdSymbols, matrizFechoLambida);
+    //printTableFecho(matrizFechoLambida, states);
+
+    AFN = matrizFechoToAFN(matrizFechoLambida, nfa_table, states, qtdSymbols, symbols);
+    //printf("\nFEZ AFN LAMBIDA -> AFN !!");
+    // AFN->print();
+    AFD = NFAtoDFA(AFN);
+    //  AFD->print();
+    //printf("\nFEZ AFN -> AFD!!");
+    saveJflap(AFD, arquivoSalvar);
+    //printf("\nGEROU ARQUIVO AFD!!\n\n");
+    validateSentence(AFD);
+
+    free(AFN);
+    free(AFD);
+    free(tempNome);
+    free(statetemp);
+    free(tempSentence);
     return 0;
 }

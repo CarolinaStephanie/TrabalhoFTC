@@ -20,6 +20,10 @@ Compilar o arquivo main.cpp
 clang main.cpp -o main
 ```
 
+```
+gcc main.cpp -o main
+```
+
 E executar
 
 ```
