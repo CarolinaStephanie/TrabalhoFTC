@@ -831,6 +831,7 @@ void readSentece(AF *AF, char *sentence)
 
     temp = AF->Start;
     tempSimbolo[1] = '\0';
+    printf("\nsentence %c", sentence[i]);
     while (sentence[i] != '\0')
     {
         tempSimbolo[0] = sentence[i];
@@ -839,7 +840,7 @@ void readSentece(AF *AF, char *sentence)
             printf("Rejeita");
             return;
         }
-        // printf("\n%c | %s->%s", sentence[i], temp->name, findEdge(AF->Transations, temp->name, tempSimbolo, 1));
+        //printf("\n%c | %s->%s", sentence[i], temp->name, findEdge(AF->Transations, temp->name, tempSimbolo, 1));
         strcpy(nextState, findEdge(AF->Transations, temp->name, tempSimbolo, 1));
         if (strcmp(nextState, "") == 0) ///nao tem edge para este simbolo neste estado
         {
@@ -857,7 +858,7 @@ void readSentece(AF *AF, char *sentence)
         else
         {
             temp = findState(AF->States, nextState, 1);
-            if (nextState == NULL)
+            if (temp == NULL)
             {
                 printf("Rejeita");
                 return;
@@ -964,7 +965,7 @@ int preprocessor(char *s, char *newExp)
     {
         newExp[i] = x[i];
     }
-        
+
     return j;
 }
 
@@ -1548,7 +1549,7 @@ void validateSentence(AF *AFD)
     while (!feof(fp))
     {
         //result = fgets(templ, 100, fp);
-        result = fscanf(fp, "%s\n", &templ); 
+        result = fscanf(fp, "%s\n", &templ);
         if (result)
         {
             printf("Sentenca: %s ", templ);
