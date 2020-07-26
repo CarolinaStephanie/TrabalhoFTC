@@ -5,7 +5,7 @@
 #define MAXCHAR 500
 
 int init[20], fin[20], a = 0, b = 0;
-
+char *statetemp, *tempSentence, *tempNome;
 /***/
 typedef struct Alphab
 {
@@ -112,6 +112,7 @@ lName *newLName()
     if (new1 == NULL)
     {
         printf(" ERRO (lName): Impossivel montar.");
+        return NULL;
     }
     else
     {
@@ -154,6 +155,7 @@ lAlphab *newAlphab()
     if (new1 == NULL)
     {
         printf(" ERRO (lAlphab): Impossivel montar.");
+        return NULL;
     }
     else
     {
@@ -196,6 +198,7 @@ lEdge *newEdge()
     if (new1 == NULL)
     {
         printf(" ERRO (lEdge): Impossivel montar.");
+        return NULL;
     }
     else
     {
@@ -238,8 +241,7 @@ void putEdge(lEdge **Lista, lEdge *new2)
 char *findEdge(lEdge *Lista, char *state, char *input, int op)
 {
     lEdge *temp;
-    char statetemp[100];
-
+    statetemp = (char *)malloc(100 * sizeof(char));
     temp = Lista;
     if (op == 0) //Para AFN
     {
@@ -270,6 +272,7 @@ char *findEdge(lEdge *Lista, char *state, char *input, int op)
             temp = temp->next;
         }
     }
+    return NULL;
 }
 /***/
 lName *findEdgeNFA(lEdge *Lista, char *state, char *input)
@@ -299,6 +302,7 @@ lStates *newState()
     if (new1 == NULL)
     {
         printf(" ERRO (lStates): Impossivel montar.");
+        return NULL;
     }
     else
     {
@@ -393,6 +397,7 @@ AF *newAF()
     if (new1 == NULL)
     {
         printf(" ERRO (lStates): Impossivel montar.");
+        return NULL;
     }
     else
     {
@@ -1548,10 +1553,10 @@ AF *matrizFechoToAFN(int matrizFechoLambida[][MAXCHAR], int nfa_table[][MAXCHAR]
 
 void validateSentence(AF *AFD)
 {
-    char templ[MAXCHAR];
     int num;
     int result;
     int l;
+    tempSentence = (char *)malloc(MAXCHAR * sizeof(char));
     fflush(stdin);
     FILE *fp = fopen("expressoes/input.txt", "r");
     if (!fp)
@@ -1563,22 +1568,22 @@ void validateSentence(AF *AFD)
     while (!feof(fp))
     {
         //result = fgets(templ, 100, fp);
-        result = fscanf(fp, "%s\n", &templ);
-        if (strcmp(templ, "-") == 0)
+        result = fscanf(fp, "%s\n", tempSentence);
+        if (strcmp(tempSentence, "-") == 0)
         {
-            strcpy(templ, "");
+            strcpy(tempSentence, "");
         }
         if (result)
         {
-            if (strcmp(templ, "") == 0)
+            if (strcmp(tempSentence, "") == 0)
             {
                 printf("Sentenca lambida: ");
             }
             else
             {
-                printf("Sentenca %s: ", templ);
+                printf("Sentenca %s: ", tempSentence);
             }
-            readSentece(AFD, templ);
+            readSentece(AFD, tempSentence);
             printf("\n");
         }
     };
@@ -1597,18 +1602,18 @@ int main()
         int init[50], fin[50], tamPost;
         int nfa_table[1000][MAXCHAR];
         int states = 0;
+        char arquivoSalvar[20] = "AFD_GERADO.jff";
 
         fflush(stdin);
-
+        tempNome = (char *)malloc(20 * sizeof(char));
         char arquivo[20] = "expressoes/";
-        char nome[20] = "";
         char outroArquivo = 'n';
-        system("cls");
+
         printf("\n**************************************************\n");
         printf("\nDigite o nome do arquivo que deseja abrir: ");
-        scanf("%s", &nome);
+        scanf("%s", tempNome);
 
-        strcat(arquivo, nome);
+        strcat(arquivo, tempNome);
         strcat(arquivo, ".jff");
 
         readExpression(arquivo, exp);
@@ -1663,13 +1668,15 @@ int main()
         AFD = NFAtoDFA(AFN);
         //  AFD->print();
         //printf("\nFEZ AFN -> AFD!!");
-        saveJflap(AFD, "AFD_GERADO.jff");
+        saveJflap(AFD, arquivoSalvar);
         //printf("\nGEROU ARQUIVO AFD!!\n\n");
         validateSentence(AFD);
 
         free(AFN);
         free(AFD);
-
+        free(tempNome);
+        free(statetemp);
+        free(tempSentence);
         printf("\n\n Deseja abrir outro arquivo? S/N ");
         scanf("%s", &outroArquivo);
         if (outroArquivo == 'n' || outroArquivo == 'N')

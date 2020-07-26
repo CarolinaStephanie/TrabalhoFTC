@@ -2,9 +2,9 @@
 	<type>fa</type>
 	<automaton>
 		<!--The list of states.-->
-		<state id="0" name="q7">
-			<x>41</x>
-			<y>67</y>
+		<state id="0" name="q11">
+			<x>67</x>
+			<y>72</y>
 			<initial/>
 			<final/>
 		</state>
